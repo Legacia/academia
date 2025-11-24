@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Treinos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        :root {
+            /* Tema Anna - Roxo/Rosa */
+            --anna-primary: #8B5CF6;
+            --anna-secondary: #EC4899;
+            --anna-gradient: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+            --anna-bg: linear-gradient(180deg, #1a1625 0%, #0f0a1a 100%);
+            --anna-card: rgba(139, 92, 246, 0.08);
+            --anna-card-border: rgba(139, 92, 246, 0.2);
+            
+            /* Tema Usuário - Verde/Azul */
+            --user-primary: #10B981;
+            --user-secondary: #06B6D4;
+            --user-gradient: linear-gradient(135deg, #10B981 0%, #06B6D4 100%);
+            --user-bg: linear-gradient(180deg, #0a1a1a 0%, #051414 100%);
+            --user-card: rgba(16, 185, 129, 0.08);
+            --user-card-border: rgba(16, 185, 129, 0.2);
+            
+            /* Cores neutras */
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-hover: rgba(255, 255, 255, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            color: var(--text-primary);
+            transition: background 0.5s ease;
+        }
+
+        body.theme-anna {
+            background: var(--anna-bg);
+        }
+
+        body.theme-user {
+            background: var(--user-bg);
+        }
+
+        /* Efeito de partículas de fundo */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        body.theme-user .bg-pattern {
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header com seleção de perfil */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        body.theme-anna .logo-icon {
+            background: var(--anna-gradient);
+        }
+
+        body.theme-user .logo-icon {
+            background: var(--user-gradient);
+        }
+
+        .logo h1 {
+            font-size: 1.8em;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75em;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* Profile Switcher */
+        .profile-switcher {
+            display: flex;
+            background: var(--surface);
+            border-radius: 50px;
+            padding: 5px;
+            gap: 5px;
+        }
+
+        .profile-btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .profile-btn:hover {
+            color: var(--text-primary);
+            background: var(--surface-hover);
+        }
+
+        .profile-btn.active {
+            color: white;
+        }
+
+        body.theme-anna .profile-btn.active {
+            background: var(--anna-gradient);
+        }
+
+        body.theme-user .profile-btn.active {
+            background: var(--user-gradient);
+        }
+
+        /* Stats Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid;
+            transition: all 0.3s ease;
+        }
+
+        body.theme-anna .stat-card {
+            background: var(--anna-card);
+            border-color: var(--anna-card-border);
+        }
+
+        body.theme-user .stat-card {
+            background: var(--user-card);
+            border-color: var(--user-card-border);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        body.theme-anna .stat-value {
+            background: var(--anna-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        body.theme-user .stat-value {
+            background: var(--user-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-detail {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid;
+            margin-bottom: 30px;
+        }
+
+        body.theme-anna .progress-section {
+            background: var(--anna-card);
+            border-color: var(--anna-card-border);
+        }
+
+        body.theme-user .progress-section {
+            background: var(--user-card);
+            border-color: var(--user-card-border);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-title {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .progress-count {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95em;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        body.theme-anna .progress-fill {
+            background: var(--anna-gradient);
+        }
+
+        body.theme-user .progress-fill {
+            background: var(--user-gradient);
+        }
+
+        /* Filters Section */
+        .filters-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-right: 10px;
+        }
+
+        .day-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .day-tab {
+            padding: 10px 18px;
+            border: 1px solid;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            background: transparent;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body.theme-anna .day-tab {
+            border-color: var(--anna-card-border);
+            color: var(--text-secondary);
+        }
+
+        body.theme-user .day-tab {
+            border-color: var(--user-card-border);
+            color: var(--text-secondary);
+        }
+
+        .day-tab:hover {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+        }
+
+        .day-tab.active {
+            color: white;
+            border-color: transparent;
+        }
+
+        body.theme-anna .day-tab.active {
+            background: var(--anna-gradient);
+        }
+
+        body.theme-user .day-tab.active {
+            background: var(--user-gradient);
+        }
+
+        .day-tab .check {
+            margin-left: 5px;
+        }
+
+        /* Type Filters */
+        .type-filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-left: auto;
+        }
+
+        .type-filter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .type-filter input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--anna-primary);
+        }
+
+        body.theme-user .type-filter input {
+            accent-color: var(--user-primary);
+        }
+
+        .type-filter label {
+            cursor: pointer;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        /* Day Content */
+        .day-content {
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid;
+            margin-bottom: 30px;
+        }
+
+        body.theme-anna .day-content {
+            background: var(--anna-card);
+            border-color: var(--anna-card-border);
+        }
+
+        body.theme-user .day-content {
+            background: var(--user-card);
+            border-color: var(--user-card-border);
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .day-info h2 {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .day-type-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        body.theme-anna .day-type-badge {
+            background: var(--anna-gradient);
+        }
+
+        body.theme-user .day-type-badge {
+            background: var(--user-gradient);
+        }
+
+        .day-description {
+            color: var(--text-secondary);
+            font-size: 1.05em;
+        }
+
+        .complete-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--surface);
+        }
+
+        .complete-toggle:hover {
+            background: var(--surface-hover);
+        }
+
+        .complete-toggle input {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        body.theme-anna .complete-toggle input {
+            accent-color: var(--anna-primary);
+        }
+
+        body.theme-user .complete-toggle input {
+            accent-color: var(--user-primary);
+        }
+
+        .complete-toggle span {
+            font-weight: 600;
+        }
+
+        /* Health Notice */
+        .health-notice {
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        body.theme-user .health-notice {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .health-notice-icon {
+            font-size: 1.5em;
+        }
+
+        .health-notice-content h4 {
+            color: #FBBF24;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .health-notice-content p {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        /* Protocol Card */
+        .protocol-card {
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        body.theme-anna .protocol-card {
+            background: rgba(251, 191, 36, 0.08);
+            border-left-color: #FBBF24;
+        }
+
+        body.theme-user .protocol-card {
+            background: rgba(251, 191, 36, 0.08);
+            border-left-color: #FBBF24;
+        }
+
+        .protocol-card h3 {
+            color: #FBBF24;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .protocol-card p {
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .protocol-card strong {
+            color: var(--text-primary);
+        }
+
+        .protocol-exercises {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .protocol-exercise-item {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        /* Exercise Cards */
+        .exercises-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .exercise-card {
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid;
+            transition: all 0.3s ease;
+        }
+
+        body.theme-anna .exercise-card {
+            background: rgba(139, 92, 246, 0.05);
+            border-color: rgba(139, 92, 246, 0.15);
+        }
+
+        body.theme-user .exercise-card {
+            background: rgba(16, 185, 129, 0.05);
+            border-color: rgba(16, 185, 129, 0.15);
+        }
+
+        .exercise-card:hover {
+            transform: translateX(5px);
+        }
+
+        body.theme-anna .exercise-card:hover {
+            border-color: var(--anna-primary);
+        }
+
+        body.theme-user .exercise-card:hover {
+            border-color: var(--user-primary);
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .exercise-title h3 {
+            font-size: 1.25em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .exercise-muscles {
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        body.theme-anna .exercise-muscles {
+            color: var(--anna-primary);
+        }
+
+        body.theme-user .exercise-muscles {
+            color: var(--user-primary);
+        }
+
+        .exercise-reps {
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 0.95em;
+            white-space: nowrap;
+        }
+
+        body.theme-anna .exercise-reps {
+            background: var(--anna-gradient);
+        }
+
+        body.theme-user .exercise-reps {
+            background: var(--user-gradient);
+        }
+
+        .details-btn {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        body.theme-anna .details-btn {
+            border-color: var(--anna-card-border);
+            color: var(--anna-primary);
+        }
+
+        body.theme-user .details-btn {
+            border-color: var(--user-card-border);
+            color: var(--user-primary);
+        }
+
+        .details-btn:hover {
+            background: var(--surface-hover);
+        }
+
+        body.theme-anna .details-btn:hover {
+            border-color: var(--anna-primary);
+        }
+
+        body.theme-user .details-btn:hover {
+            border-color: var(--user-primary);
+        }
+
+        .exercise-details {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .detail-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-section h4 {
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        body.theme-anna .detail-section h4 {
+            color: var(--anna-primary);
+        }
+
+        body.theme-user .detail-section h4 {
+            color: var(--user-primary);
+        }
+
+        .detail-section p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .detail-section ul {
+            list-style: none;
+        }
+
+        .detail-section li {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .detail-section li:before {
+            content: "⚠️";
+            position: absolute;
+            left: 0;
+            font-size: 0.9em;
+        }
+
+        /* Metabolic Circuit */
+        .circuit-card {
+            padding: 25px;
+            border-radius: 16px;
+            margin-top: 20px;
+            border-left: 4px solid;
+        }
+
+        body.theme-anna .circuit-card {
+            background: rgba(236, 72, 153, 0.1);
+            border-left-color: var(--anna-secondary);
+        }
+
+        body.theme-user .circuit-card {
+            background: rgba(6, 182, 212, 0.1);
+            border-left-color: var(--user-secondary);
+        }
+
+        .circuit-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        body.theme-anna .circuit-card h3 {
+            color: var(--anna-secondary);
+        }
+
+        body.theme-user .circuit-card h3 {
+            color: var(--user-secondary);
+        }
+
+        .circuit-card p {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .circuit-card strong {
+            color: var(--text-primary);
+        }
+
+        /* No exercises message */
+        .no-exercises {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .no-exercises-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+
+        .footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        body.theme-anna .footer a:hover {
+            color: var(--anna-primary);
+        }
+
+        body.theme-user .footer a:hover {
+            color: var(--user-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .profile-switcher {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .filters-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .type-filters {
+                margin-left: 0;
+            }
+
+            .day-header {
+                flex-direction: column;
+            }
+
+            .complete-toggle {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .exercise-header {
+                flex-direction: column;
+            }
+
+            .exercise-reps {
+                align-self: flex-start;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .day-content {
+            animation: fadeIn 0.4s ease;
+        }
+
+        .exercise-card {
+            animation: fadeIn 0.4s ease;
+            animation-fill-mode: both;
+        }
+
+        .exercise-card:nth-child(1) { animation-delay: 0.05s; }
+        .exercise-card:nth-child(2) { animation-delay: 0.1s; }
+        .exercise-card:nth-child(3) { animation-delay: 0.15s; }
+        .exercise-card:nth-child(4) { animation-delay: 0.2s; }
+        .exercise-card:nth-child(5) { animation-delay: 0.25s; }
+        .exercise-card:nth-child(6) { animation-delay: 0.3s; }
+        .exercise-card:nth-child(7) { animation-delay: 0.35s; }
+    </style>
+</head>
+<body class="theme-anna">
+    <div class="bg-pattern"></div>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // =====================================================
+        // DADOS DO TREINO DA ANNA
+        // =====================================================
+        const treinoAnna = [
+            {
+                dia: "Segunda",
+                tipoTreino: "Força",
+                descricaoGeral: "Treino forte de pernas e glúteos (fora de casa)",
+                concluido: false,
+                exercicios: [
+                    {
+                        nome: "Agachamento Livre / Smith",
+                        gruposMusculares: "Quadríceps, glúteos, core",
+                        seriesReps: "4× 8–10",
+                        detalhesExecucao: "Pés na largura dos ombros, levemente abertos. Coluna neutra, peito aberto. Descer empurrando o quadril para trás até as coxas ficarem paralelas ao chão (ou limite seguro). Subir empurrando o chão com o calcanhar, sem estender demais o joelho.",
+                        errosComuns: ["Joelho caindo para dentro", "Calcanhar saindo do chão", "Arredondar a lombar"]
+                    },
+                    {
+                        nome: "Cadeira Extensora",
+                        gruposMusculares: "Quadríceps",
+                        seriesReps: "3× 12–15",
+                        detalhesExecucao: "Ajustar o encosto para alinhar o joelho ao pivô da máquina. Pés apontando para frente. Estender joelhos de forma controlada, segurar 1s no topo, descer devagar.",
+                        errosComuns: ["Usar impulso", "Jogar tronco para trás"]
+                    },
+                    {
+                        nome: "Passada / Avanço com halteres",
+                        gruposMusculares: "Quadríceps, glúteos, posterior",
+                        seriesReps: "3× 10/perna",
+                        detalhesExecucao: "Ficar de pé, tronco firme. Dar um passo longo à frente. Descer em linha reta, joelho da frente alinhado ao pé, joelho de trás quase tocando o chão. Subir pressionando o calcanhar da perna da frente.",
+                        errosComuns: ["Passo curto", "Tronco inclinando demais"]
+                    },
+                    {
+                        nome: "Stiff com halteres ou barra",
+                        gruposMusculares: "Posterior de coxa, glúteos",
+                        seriesReps: "3× 10–12",
+                        detalhesExecucao: "Pés na largura do quadril, joelhos levemente flexionados. Segurar a barra/halteres na frente das coxas. Enviar o quadril para trás enquanto o tronco desce, mantendo coluna neutra. Descer até sentir alongar o posterior, subir contraindo glúteos.",
+                        errosComuns: ["Arredondar costas", "Transformar em agachamento (dobrar demais o joelho)"]
+                    },
+                    {
+                        nome: "Hip Thrust / Elevação Pélvica",
+                        gruposMusculares: "Glúteo máximo",
+                        seriesReps: "4× 10–12",
+                        detalhesExecucao: "Parte alta das costas apoiada no banco, pés firmes no chão. Descer o quadril devagar. Subir empurrando o chão e contraindo glúteos, alinhando tronco e coxas no topo sem hiperestender a lombar.",
+                        errosComuns: ["Exagerar na lombar", "Pés muito afastados ou muito próximos"]
+                    }
+                ]
+            },
+            {
+                dia: "Terça",
+                tipoTreino: "HIIT",
+                descricaoGeral: "HIIT na esteira - alta intensidade",
+                concluido: false,
+                protocolo: {
+                    tipo: "Esteira",
+                    tempoAtivo: "30 segundos correndo forte",
+                    tempoDescanso: "30–40 segundos caminhando",
+                    ciclos: "10–12 ciclos",
+                    instrucoes: "Manter postura ereta, peito aberto, olhar à frente. Braços próximos ao corpo, movimento curto e firme. Evitar passos muito longos (melhor cadência mais rápida)."
+                }
+            },
+            {
+                dia: "Quarta",
+                tipoTreino: "Força",
+                descricaoGeral: "Superior + Core (academia do prédio)",
+                concluido: false,
+                exercicios: [
+                    {
+                        nome: "Remada Baixa / Máquina",
+                        gruposMusculares: "Dorsais, romboides",
+                        seriesReps: "3× 10–12",
+                        detalhesExecucao: "Peito aberto, ombros para trás, puxar o cabo em direção ao abdômen, segurar 1s, voltar controlado.",
+                        errosComuns: ["Encolher ombros", "Puxar com impulso"]
+                    },
+                    {
+                        nome: "Puxada na frente",
+                        gruposMusculares: "Dorsal, latíssimo",
+                        seriesReps: "3× 10–12",
+                        detalhesExecucao: "Segurar a barra mais larga que os ombros, puxar até o alto do peito, retornar controlando.",
+                        errosComuns: ["Puxar atrás da nuca", "Balançar o corpo"]
+                    },
+                    {
+                        nome: "Supino máquina ou halteres",
+                        gruposMusculares: "Peitoral, tríceps",
+                        seriesReps: "3× 10–12",
+                        detalhesExecucao: "Deitar com pés no chão, descer a carga até a linha do peito, subir sem travar cotovelos.",
+                        errosComuns: ["Travar os cotovelos", "Arquear demais a lombar"]
+                    },
+                    {
+                        nome: "Elevação Lateral",
+                        gruposMusculares: "Deltoides laterais",
+                        seriesReps: "3× 12–15",
+                        detalhesExecucao: "Halteres ao lado do corpo, elevar até a altura dos ombros, descer devagar.",
+                        errosComuns: ["Elevar muito acima dos ombros", "Usar impulso"]
+                    },
+                    {
+                        nome: "Tríceps Corda",
+                        gruposMusculares: "Tríceps",
+                        seriesReps: "3× 12–15",
+                        detalhesExecucao: "Cotovelos colados ao tronco, empurrar a corda para baixo e abrir levemente no final.",
+                        errosComuns: ["Afastar cotovelos", "Usar ombros para empurrar"]
+                    },
+                    {
+                        nome: "Prancha Isométrica",
+                        gruposMusculares: "Core, abdômen",
+                        seriesReps: "3× 40s",
+                        detalhesExecucao: "Antebraços no chão, corpo em linha reta, abdômen ativo.",
+                        errosComuns: ["Quadril caído", "Elevar muito o quadril"]
+                    },
+                    {
+                        nome: "Elevação de Pernas",
+                        gruposMusculares: "Core, abdômen inferior",
+                        seriesReps: "3× 12",
+                        detalhesExecucao: "Deitada, subir pernas retas até 90°, descer sem encostar totalmente no chão, mantendo lombar estável.",
+                        errosComuns: ["Lombar saindo do chão", "Usar impulso"]
+                    }
+                ]
+            },
+            {
+                dia: "Quinta",
+                tipoTreino: "LISS",
+                descricaoGeral: "Cardio moderado - baixa intensidade",
+                concluido: false,
+                protocolo: {
+                    tipo: "Esteira ou Bike",
+                    intensidade: "5,5–6,5 km/h (esteira) ou moderada (bike)",
+                    duracao: "40 minutos",
+                    foco: "Manter frequência cardíaca aproximada entre 125–140 bpm, conversa possível, mas com leve esforço."
+                }
+            },
+            {
+                dia: "Sexta",
+                tipoTreino: "Força",
+                descricaoGeral: "Pernas/Glúteo + Finalização metabólica",
+                concluido: false,
+                exercicios: [
+                    {
+                        nome: "Agachamento Livre / Smith",
+                        gruposMusculares: "Quadríceps, glúteos, core",
+                        seriesReps: "4× 8–10",
+                        detalhesExecucao: "Pés na largura dos ombros, levemente abertos. Coluna neutra, peito aberto. Descer empurrando o quadril para trás.",
+                        errosComuns: ["Joelho caindo para dentro", "Calcanhar saindo do chão"]
+                    },
+                    {
+                        nome: "Stiff",
+                        gruposMusculares: "Posterior de coxa, glúteos",
+                        seriesReps: "3× 10",
+                        detalhesExecucao: "Pés na largura do quadril, joelhos levemente flexionados. Enviar o quadril para trás mantendo coluna neutra.",
+                        errosComuns: ["Arredondar costas", "Dobrar demais o joelho"]
+                    },
+                    {
+                        nome: "Agachamento Búlgaro",
+                        gruposMusculares: "Quadríceps, glúteos",
+                        seriesReps: "3× 8–10/perna",
+                        detalhesExecucao: "Pé de trás apoiado em banco elevado, descer controladamente com o joelho da frente alinhado ao pé.",
+                        errosComuns: ["Joelho passando muito da ponta do pé", "Perder equilíbrio"]
+                    },
+                    {
+                        nome: "Mesa Flexora",
+                        gruposMusculares: "Posterior de coxa",
+                        seriesReps: "3× 12",
+                        detalhesExecucao: "Deitar de barriga para baixo, ajustar o rolo nos tornozelos, flexionar joelhos puxando o peso em direção aos glúteos.",
+                        errosComuns: ["Elevar o quadril", "Usar impulso"]
+                    },
+                    {
+                        nome: "Hip Thrust",
+                        gruposMusculares: "Glúteo máximo",
+                        seriesReps: "4× 10–12",
+                        detalhesExecucao: "Parte alta das costas apoiada no banco, subir empurrando o chão e contraindo glúteos.",
+                        errosComuns: ["Hiperestender lombar", "Não contrair glúteos no topo"]
+                    }
+                ],
+                circuitoMetabolic: {
+                    nome: "Finalização Metabolic",
+                    protocolo: "45s ON / 15s OFF × 2 voltas",
+                    exercicios: ["Step-up rápido", "Kettlebell Swing", "Mountain Climber", "Agachamento rápido"]
+                }
+            },
+            {
+                dia: "Sábado",
+                tipoTreino: "HIIT",
+                descricaoGeral: "HIIT em casa - sem equipamento",
+                concluido: false,
+                protocolo: {
+                    tipo: "Casa - Bodyweight",
+                    formato: "40s ON / 20s OFF por 3 voltas",
+                    exercicios: ["Agachamento rápido", "Polichinelo", "Prancha com corrida", "Burpee modificado", "Mountain climber"]
+                }
+            },
+            {
+                dia: "Domingo",
+                tipoTreino: "Descanso",
+                descricaoGeral: "Descanso ativo - recuperação",
+                concluido: false,
+                protocolo: {
+                    tipo: "Ativo",
+                    sugestao: "Caminhada leve, alongamento, mobilidade"
+                }
+            }
+        ];
+
+        // =====================================================
+        // DADOS DO TREINO DO USUÁRIO (com cuidados para coluna)
+        // Equipamentos disponíveis: Halteres, Máquina Multi-exercícios, Esteira, Bikes
+        // Considerações: Hérnia de disco e Espondilolistese
+        // - Evitar carga axial excessiva
+        // - Priorizar estabilização do core
+        // - Evitar hiperextensão e flexão extrema
+        // - Exercícios adaptados para equipamento disponível
+        // =====================================================
+        const treinoUsuario = [
+            {
+                dia: "Segunda",
+                tipoTreino: "Força",
+                descricaoGeral: "Membros Inferiores - Foco em halteres e estabilização",
+                concluido: false,
+                avisoSaude: "Todos os exercícios foram adaptados para halteres. Mantenha a coluna SEMPRE neutra. Pare imediatamente se sentir dor ou desconforto na região lombar.",
+                exercicios: [
+                    {
+                        nome: "Goblet Squat (Agachamento com Halter)",
+                        gruposMusculares: "Quadríceps, glúteos, core",
+                        seriesReps: "4× 12–15",
+                        detalhesExecucao: "Segure UM halter na vertical, junto ao peito, com as duas mãos. Pés na largura dos ombros. Desça controladamente mantendo o peito alto e a coluna neutra. A carga frontal ajuda a manter a postura correta e reduz estresse na lombar. Desça até onde conseguir sem comprometer a postura.",
+                        errosComuns: ["Inclinar o tronco para frente", "Joelhos caindo para dentro", "Perder a posição do halter"]
+                    },
+                    {
+                        nome: "Afundo Estático com Halteres",
+                        gruposMusculares: "Quadríceps, glúteos",
+                        seriesReps: "3× 12/perna",
+                        detalhesExecucao: "Posicione-se em afundo (uma perna à frente, outra atrás), segurando halteres. Desça e suba no mesmo lugar - NÃO caminhe. Mantenha o tronco ereto. O joelho da frente não deve passar da ponta do pé. Faça todas as reps de um lado, depois troque.",
+                        errosComuns: ["Inclinar o tronco", "Joelho passando do pé", "Passos muito curtos"]
+                    },
+                    {
+                        nome: "Step-Up com Halteres",
+                        gruposMusculares: "Quadríceps, glúteos",
+                        seriesReps: "3× 10/perna",
+                        detalhesExecucao: "Use um step, banco ou degrau estável (30-40cm). Segure halteres ao lado do corpo. Suba empurrando pelo calcanhar da perna de cima. Desça controladamente. Complete todas as reps de um lado antes de trocar.",
+                        errosComuns: ["Impulsionar com a perna de baixo", "Degrau muito alto", "Descer rápido demais"]
+                    },
+                    {
+                        nome: "Ponte de Glúteos com Halter",
+                        gruposMusculares: "Glúteos, posterior de coxa",
+                        seriesReps: "4× 15",
+                        detalhesExecucao: "Deitado de costas, joelhos flexionados, pés no chão. Apoie UM halter no quadril (segure com as mãos). Eleve o quadril contraindo os glúteos, alinhando joelhos-quadril-ombros. Segure 2s no topo. NÃO hiperestenda a lombar!",
+                        errosComuns: ["Hiperestender a lombar", "Não contrair glúteos", "Subir muito rápido"]
+                    },
+                    {
+                        nome: "Stiff com Halteres (amplitude reduzida)",
+                        gruposMusculares: "Posterior de coxa, glúteos",
+                        seriesReps: "3× 12",
+                        detalhesExecucao: "Em pé, halteres na frente das coxas. Joelhos LEVEMENTE flexionados (e fixos). Empurre o quadril para trás, descendo o tronco. PARE quando sentir leve tensão no posterior - NÃO desça demais. Suba contraindo glúteos. Amplitude menor = mais seguro para sua coluna.",
+                        errosComuns: ["Arredondar a lombar (PERIGO!)", "Descer demais", "Dobrar muito os joelhos"]
+                    },
+                    {
+                        nome: "Abdução de Quadril Deitado",
+                        gruposMusculares: "Glúteo médio",
+                        seriesReps: "3× 15/lado",
+                        detalhesExecucao: "Deitado de lado, pernas estendidas. Eleve a perna de cima mantendo-a reta. Pode adicionar caneleira ou halter apoiado na coxa. Movimento controlado, sem balançar.",
+                        errosComuns: ["Rotacionar o quadril", "Movimento muito rápido", "Flexionar o joelho"]
+                    },
+                    {
+                        nome: "Panturrilha em Pé com Halteres",
+                        gruposMusculares: "Panturrilhas",
+                        seriesReps: "3× 20",
+                        detalhesExecucao: "Em pé segurando halteres, metatarsos em uma elevação (degrau, step). Desça os calcanhares, depois suba na ponta dos pés. Pode fazer unilateral para maior intensidade.",
+                        errosComuns: ["Amplitude reduzida", "Movimento muito rápido"]
+                    }
+                ]
+            },
+            {
+                dia: "Terça",
+                tipoTreino: "Força",
+                descricaoGeral: "Superiores - Peito, Ombros e Tríceps (Empurrar)",
+                concluido: false,
+                avisoSaude: "Use a máquina multi-exercícios quando possível. Nos exercícios com halteres, mantenha a lombar neutra.",
+                exercicios: [
+                    {
+                        nome: "Supino com Halteres (no chão)",
+                        gruposMusculares: "Peitoral, tríceps, deltoides anterior",
+                        seriesReps: "4× 12",
+                        detalhesExecucao: "Deitado NO CHÃO (mais seguro para lombar que banco). Joelhos flexionados, pés no chão. Halteres acima do peito, desça até os cotovelos tocarem o chão, empurre de volta. O chão limita a amplitude, protegendo os ombros.",
+                        errosComuns: ["Arquear a lombar", "Travar cotovelos", "Descer rápido demais"]
+                    },
+                    {
+                        nome: "Crucifixo com Halteres (no chão)",
+                        gruposMusculares: "Peitoral",
+                        seriesReps: "3× 12",
+                        detalhesExecucao: "Mesma posição do supino. Braços estendidos acima do peito, leve flexão nos cotovelos. Abra os braços até os cotovelos tocarem o chão. Retorne abraçando.",
+                        errosComuns: ["Cotovelos muito estendidos", "Peso excessivo"]
+                    },
+                    {
+                        nome: "Cross-over no Cabo (máquina multi)",
+                        gruposMusculares: "Peitoral",
+                        seriesReps: "3× 15",
+                        detalhesExecucao: "Se a máquina tiver cabos altos, puxe-os para baixo e ao centro do corpo, cruzando levemente. Tronco levemente inclinado, core ativo. Ótimo para peitoral sem carga na coluna.",
+                        errosComuns: ["Usar impulso do corpo", "Braços muito estendidos"]
+                    },
+                    {
+                        nome: "Desenvolvimento com Halteres (sentado)",
+                        gruposMusculares: "Deltoides, tríceps",
+                        seriesReps: "3× 12",
+                        detalhesExecucao: "Sentado com apoio nas costas (cadeira ou parede). Halteres na altura dos ombros. Empurre para cima sem travar cotovelos. Desça até os cotovelos a 90°.",
+                        errosComuns: ["Arquear a lombar", "Travar cotovelos", "Peso excessivo"]
+                    },
+                    {
+                        nome: "Elevação Lateral com Halteres",
+                        gruposMusculares: "Deltoides lateral",
+                        seriesReps: "3× 15",
+                        detalhesExecucao: "Sentado ou em pé com apoio. Halteres leves ao lado. Eleve até altura dos ombros, cotovelos levemente flexionados. Desça controlado.",
+                        errosComuns: ["Peso excessivo", "Balançar o corpo", "Subir demais"]
+                    },
+                    {
+                        nome: "Elevação Frontal Alternada",
+                        gruposMusculares: "Deltoides anterior",
+                        seriesReps: "3× 12/braço",
+                        detalhesExecucao: "Em pé ou sentado. Eleve um halter à frente até altura dos ombros, palma para baixo. Alterne os braços.",
+                        errosComuns: ["Balançar o corpo", "Subir demais"]
+                    },
+                    {
+                        nome: "Tríceps na Polia (máquina multi)",
+                        gruposMusculares: "Tríceps",
+                        seriesReps: "3× 15",
+                        detalhesExecucao: "Usando a polia alta da máquina multi. Cotovelos colados ao tronco, empurre para baixo. Retorne controlado até 90°.",
+                        errosComuns: ["Afastar cotovelos", "Inclinar tronco"]
+                    },
+                    {
+                        nome: "Tríceps Testa com Halteres",
+                        gruposMusculares: "Tríceps",
+                        seriesReps: "3× 12",
+                        detalhesExecucao: "Deitado no chão, halteres acima do peito. Flexione apenas os cotovelos, descendo os halteres em direção à testa. Estenda de volta.",
+                        errosComuns: ["Mover os ombros", "Bater na testa!"]
+                    }
+                ]
+            },
+            {
+                dia: "Quarta",
+                tipoTreino: "Core",
+                descricaoGeral: "Estabilização de Core + Mobilidade - FUNDAMENTAL para sua coluna",
+                concluido: false,
+                avisoSaude: "Este treino é ESSENCIAL para fortalecer a musculatura que protege sua coluna. Execute com máxima atenção à técnica. Nunca force se sentir dor.",
+                exercicios: [
+                    {
+                        nome: "Dead Bug",
+                        gruposMusculares: "Core profundo, transverso do abdômen",
+                        seriesReps: "3× 10/lado",
+                        detalhesExecucao: "Deitado de costas, joelhos a 90°, braços estendidos para o teto. LOMBAR SEMPRE COLADA NO CHÃO - isso é fundamental! Estenda um braço para trás e a perna oposta para frente, alternadamente. Movimentos LENTOS e controlados.",
+                        errosComuns: ["Lombar saindo do chão (principal erro!)", "Movimentos rápidos demais", "Prender a respiração"]
+                    },
+                    {
+                        nome: "Bird Dog",
+                        gruposMusculares: "Core, eretores da coluna, glúteos",
+                        seriesReps: "3× 10/lado",
+                        detalhesExecucao: "Posição de quatro apoios, mãos sob os ombros, joelhos sob o quadril. Mantenha a coluna neutra (imagine um copo d'água nas costas). Estenda um braço e a perna oposta, formando uma linha reta. Segure 3s, retorne. Alterne.",
+                        errosComuns: ["Arquear ou arredondar a lombar", "Rotacionar o quadril", "Pressa no movimento"]
+                    },
+                    {
+                        nome: "Prancha Frontal",
+                        gruposMusculares: "Core, estabilizadores",
+                        seriesReps: "3× 20–30s",
+                        detalhesExecucao: "Antebraços no chão, corpo em linha reta da cabeça aos pés (ou joelhos, se necessário). Contraia o abdômen como se fosse levar o umbigo à coluna. Respire normalmente. NÃO deixe o quadril cair ou subir.",
+                        errosComuns: ["Quadril muito alto ou baixo", "Prender a respiração", "Pescoço tensionado"]
+                    },
+                    {
+                        nome: "Prancha Lateral",
+                        gruposMusculares: "Oblíquos, quadrado lombar",
+                        seriesReps: "3× 15–20s/lado",
+                        detalhesExecucao: "Deitado de lado, apoio no antebraço e joelho de baixo (ou pés, se conseguir). Eleve o quadril formando linha reta. Core ativo o tempo todo.",
+                        errosComuns: ["Quadril caindo", "Rotação do tronco", "Tensão no pescoço"]
+                    },
+                    {
+                        nome: "Ponte de Glúteos Isométrica",
+                        gruposMusculares: "Glúteos, core posterior",
+                        seriesReps: "3× 30s (segurando no topo)",
+                        detalhesExecucao: "Deitado, joelhos flexionados. Eleve o quadril e SEGURE na posição, contraindo glúteos. Não deixe o quadril cair. Variação: elevar uma perna estendida.",
+                        errosComuns: ["Hiperestender a lombar", "Não contrair glúteos ativamente"]
+                    },
+                    {
+                        nome: "Pallof Press (anti-rotação no cabo)",
+                        gruposMusculares: "Core, oblíquos, estabilizadores",
+                        seriesReps: "3× 10/lado",
+                        detalhesExecucao: "Na máquina multi, posicione o cabo na altura do peito. De lado para a máquina, segure a pegada junto ao peito. Estenda os braços à frente, resistindo à rotação. Volte ao peito. O core trabalha para manter o tronco reto.",
+                        errosComuns: ["Rotacionar o tronco", "Usar peso excessivo", "Não ativar o core"]
+                    },
+                    {
+                        nome: "Mobilidade: Cat-Cow (Gato-Vaca)",
+                        gruposMusculares: "Mobilidade da coluna",
+                        seriesReps: "2× 10",
+                        detalhesExecucao: "Quatro apoios. Inspire arqueando levemente (vaca), expire arredondando (gato). Movimentos SUAVES e dentro da amplitude confortável. Nunca force!",
+                        errosComuns: ["Movimentos bruscos", "Forçar amplitude", "Prender respiração"]
+                    },
+                    {
+                        nome: "Mobilidade: Rotação Torácica",
+                        gruposMusculares: "Mobilidade torácica",
+                        seriesReps: "2× 8/lado",
+                        detalhesExecucao: "Quatro apoios ou deitado de lado. Uma mão atrás da cabeça. Rode o tronco abrindo o cotovelo para o teto, depois feche. Movimento apenas na região torácica (meio das costas), não force a lombar.",
+                        errosComuns: ["Forçar a lombar", "Movimentos bruscos"]
+                    }
+                ]
+            },
+            {
+                dia: "Quinta",
+                tipoTreino: "Força",
+                descricaoGeral: "Superiores - Costas e Bíceps (Puxar)",
+                concluido: false,
+                avisoSaude: "Nos exercícios de puxar, mantenha sempre a coluna neutra. Use a máquina multi para os exercícios de cabo.",
+                exercicios: [
+                    {
+                        nome: "Puxada Alta (máquina multi)",
+                        gruposMusculares: "Latíssimo do dorso, bíceps",
+                        seriesReps: "4× 12",
+                        detalhesExecucao: "Sentado ou ajoelhado, dependendo da configuração. Pegada um pouco mais larga que os ombros. Puxe a barra até o alto do peito, contraindo as escápulas. Retorne controlando.",
+                        errosComuns: ["Puxar atrás do pescoço", "Inclinar muito para trás", "Soltar rápido"]
+                    },
+                    {
+                        nome: "Remada no Cabo (máquina multi)",
+                        gruposMusculares: "Dorsais, romboides, bíceps",
+                        seriesReps: "4× 12",
+                        detalhesExecucao: "Sentado no chão ou banco, pés apoiados. Use a polia baixa. Puxe em direção ao abdômen, retraindo escápulas. Mantenha a coluna ereta - NÃO balance para frente e trás!",
+                        errosComuns: ["Balançar o tronco", "Não retrair escápulas", "Usar impulso"]
+                    },
+                    {
+                        nome: "Remada Unilateral com Halter",
+                        gruposMusculares: "Dorsais, romboides",
+                        seriesReps: "3× 12/lado",
+                        detalhesExecucao: "Apoie uma mão e joelho em banco ou cadeira estável. Costas paralelas ao chão, coluna neutra. Puxe o halter em direção ao quadril, cotovelo junto ao corpo. Desça controlado.",
+                        errosComuns: ["Rotacionar o tronco", "Arredondar as costas", "Usar impulso"]
+                    },
+                    {
+                        nome: "Face Pull (cabo alto)",
+                        gruposMusculares: "Deltoides posterior, romboides, rotadores externos",
+                        seriesReps: "3× 15",
+                        detalhesExecucao: "Cabo na altura do rosto. Puxe em direção à face, abrindo os cotovelos para fora e para trás. Contraia as escápulas no final. Excelente para postura!",
+                        errosComuns: ["Não abrir os cotovelos", "Peso excessivo", "Não contrair escápulas"]
+                    },
+                    {
+                        nome: "Pullover com Halter",
+                        gruposMusculares: "Dorsais, peitoral, tríceps",
+                        seriesReps: "3× 12",
+                        detalhesExecucao: "Deitado no chão, segure UM halter com as duas mãos acima do peito. Leve o halter para trás da cabeça (braços quase estendidos), retorne. Amplitude reduzida = mais seguro.",
+                        errosComuns: ["Arquear a lombar", "Amplitude excessiva", "Dobrar demais os cotovelos"]
+                    },
+                    {
+                        nome: "Rosca Direta com Halteres",
+                        gruposMusculares: "Bíceps",
+                        seriesReps: "3× 12",
+                        detalhesExecucao: "Em pé ou sentado com apoio. Cotovelos fixos ao lado do corpo. Flexione os cotovelos subindo os halteres, desça controladamente.",
+                        errosComuns: ["Balançar o corpo", "Mover os cotovelos", "Peso excessivo"]
+                    },
+                    {
+                        nome: "Rosca Martelo",
+                        gruposMusculares: "Bíceps, braquial",
+                        seriesReps: "3× 12",
+                        detalhesExecucao: "Pegada neutra (palmas voltadas uma para outra). Mesma execução da rosca direta.",
+                        errosComuns: ["Balançar o corpo", "Amplitude incompleta"]
+                    },
+                    {
+                        nome: "Rosca Concentrada",
+                        gruposMusculares: "Bíceps",
+                        seriesReps: "2× 10/braço",
+                        detalhesExecucao: "Sentado, cotovelo apoiado na parte interna da coxa. Flexione subindo o halter, desça controlado. Isola bem o bíceps.",
+                        errosComuns: ["Usar impulso do corpo", "Não completar amplitude"]
+                    }
+                ]
+            },
+            {
+                dia: "Sexta",
+                tipoTreino: "LISS",
+                descricaoGeral: "Cardio de baixo impacto + Core leve",
+                concluido: false,
+                avisoSaude: "A bike ergométrica é mais segura para sua coluna que a esteira. Mantenha postura ereta durante todo o treino.",
+                protocolo: {
+                    tipo: "Bike Ergométrica (preferencial) ou Esteira",
+                    intensidade: "Moderada - conseguir manter conversa",
+                    duracao: "30–40 minutos",
+                    foco: "Frequência cardíaca entre 120–140 bpm. Na bike, mantenha postura ereta e evite inclinar muito para frente. Na esteira, caminhe em velocidade confortável (5-6 km/h) sem inclinação excessiva.",
+                    complemento: "Após o cardio, faça 2 séries de Dead Bug (10/lado) e 2 séries de Ponte de Glúteos (15 reps) para manutenção do core."
+                }
+            },
+            {
+                dia: "Sábado",
+                tipoTreino: "Força",
+                descricaoGeral: "Full Body - Circuito com halteres e cabos",
+                concluido: false,
+                avisoSaude: "Circuito com cargas moderadas. Foco em volume e condicionamento. Mantenha a técnica perfeita - reduza o peso se necessário.",
+                exercicios: [
+                    {
+                        nome: "Goblet Squat",
+                        gruposMusculares: "Quadríceps, glúteos",
+                        seriesReps: "3× 15",
+                        detalhesExecucao: "Mesmo protocolo de segunda, carga moderada. Foco em controle e bombeamento.",
+                        errosComuns: ["Perder postura com a fadiga"]
+                    },
+                    {
+                        nome: "Supino com Halteres (no chão)",
+                        gruposMusculares: "Peitoral, tríceps",
+                        seriesReps: "3× 15",
+                        detalhesExecucao: "Carga moderada, movimento controlado.",
+                        errosComuns: ["Arquear a lombar com a fadiga"]
+                    },
+                    {
+                        nome: "Remada no Cabo",
+                        gruposMusculares: "Dorsais, bíceps",
+                        seriesReps: "3× 15",
+                        detalhesExecucao: "Máquina multi, carga moderada. Foco em squeeze das escápulas.",
+                        errosComuns: ["Balançar o tronco"]
+                    },
+                    {
+                        nome: "Desenvolvimento com Halteres (sentado)",
+                        gruposMusculares: "Deltoides, tríceps",
+                        seriesReps: "3× 15",
+                        detalhesExecucao: "Apoie as costas. Carga moderada.",
+                        errosComuns: ["Arquear lombar"]
+                    },
+                    {
+                        nome: "Ponte de Glúteos com Halter",
+                        gruposMusculares: "Glúteos",
+                        seriesReps: "3× 15",
+                        detalhesExecucao: "Foco na contração no topo.",
+                        errosComuns: ["Pressa no movimento"]
+                    },
+                    {
+                        nome: "Prancha Frontal",
+                        gruposMusculares: "Core",
+                        seriesReps: "3× 30s",
+                        detalhesExecucao: "Finalize com pranchas para manter o core ativo.",
+                        errosComuns: ["Quadril desalinhado"]
+                    }
+                ],
+                circuitoMetabolic: {
+                    nome: "Formato Circuito",
+                    protocolo: "Execute os 6 exercícios em sequência, descanse 90–120s, repita 3 voltas. Descanse 60s entre exercícios se necessário.",
+                    exercicios: []
+                }
+            },
+            {
+                dia: "Domingo",
+                tipoTreino: "Descanso",
+                descricaoGeral: "Recuperação ativa e mobilidade",
+                concluido: false,
+                protocolo: {
+                    tipo: "Recuperação Ativa",
+                    sugestao: "Caminhada leve na esteira ou ao ar livre (20–30min), alongamentos suaves, mobilidade da coluna (Cat-Cow, rotações torácicas). A recuperação é fundamental para ganho de força E para a saúde da sua coluna. Hidrate-se bem!"
+                }
+            }
+        ];
+
+        // =====================================================
+        // COMPONENTE PRINCIPAL
+        // =====================================================
+        function App() {
+            // Versão dos dados - incrementar quando houver mudanças no treino
+            const DATA_VERSION = 2;
+
+            // Estado do perfil ativo (salvo em localStorage)
+            const [perfilAtivo, setPerfilAtivo] = useState(() => {
+                return localStorage.getItem('perfilAtivo') || 'anna';
+            });
+
+            // Estados dos treinos (salvos em localStorage)
+            // Verifica a versão para forçar atualização quando houver mudanças
+            const [treinosAnna, setTreinosAnna] = useState(() => {
+                const savedVersion = localStorage.getItem('dataVersion');
+                if (savedVersion !== String(DATA_VERSION)) {
+                    localStorage.removeItem('treinosAnna');
+                    localStorage.removeItem('treinosUsuario');
+                    localStorage.setItem('dataVersion', DATA_VERSION);
+                    return treinoAnna;
+                }
+                const saved = localStorage.getItem('treinosAnna');
+                return saved ? JSON.parse(saved) : treinoAnna;
+            });
+
+            const [treinosUsuario, setTreinosUsuario] = useState(() => {
+                const savedVersion = localStorage.getItem('dataVersion');
+                if (savedVersion !== String(DATA_VERSION)) {
+                    return treinoUsuario;
+                }
+                const saved = localStorage.getItem('treinosUsuario');
+                return saved ? JSON.parse(saved) : treinoUsuario;
+            });
+
+            const [diaSelecionado, setDiaSelecionado] = useState("Segunda");
+            const [filtrosTipo, setFiltrosTipo] = useState({
+                Força: true,
+                HIIT: true,
+                LISS: true,
+                Core: true,
+                Descanso: true
+            });
+
+            // Dados ativos baseados no perfil
+            const dadosAtivos = perfilAtivo === 'anna' ? treinosAnna : treinosUsuario;
+            const setDadosAtivos = perfilAtivo === 'anna' ? setTreinosAnna : setTreinosUsuario;
+
+            // Salvar no localStorage quando mudar
+            useEffect(() => {
+                localStorage.setItem('perfilAtivo', perfilAtivo);
+            }, [perfilAtivo]);
+
+            useEffect(() => {
+                localStorage.setItem('treinosAnna', JSON.stringify(treinosAnna));
+            }, [treinosAnna]);
+
+            useEffect(() => {
+                localStorage.setItem('treinosUsuario', JSON.stringify(treinosUsuario));
+            }, [treinosUsuario]);
+
+            // Aplicar tema no body
+            useEffect(() => {
+                document.body.className = perfilAtivo === 'anna' ? 'theme-anna' : 'theme-user';
+            }, [perfilAtivo]);
+
+            // Calcular estatísticas
+            const treinosConcluidos = dadosAtivos.filter(d => d.concluido).length;
+            const progressoPercentual = (treinosConcluidos / dadosAtivos.length) * 100;
+            const treinosForca = dadosAtivos.filter(d => d.tipoTreino === 'Força').length;
+            const treinosCardio = dadosAtivos.filter(d => ['HIIT', 'LISS'].includes(d.tipoTreino)).length;
+
+            // Toggle conclusão
+            const toggleConclusao = (dia) => {
+                const novoDados = dadosAtivos.map(d =>
+                    d.dia === dia ? { ...d, concluido: !d.concluido } : d
+                );
+                setDadosAtivos(novoDados);
+            };
+
+            // Toggle filtro
+            const toggleFiltro = (tipo) => {
+                setFiltrosTipo({ ...filtrosTipo, [tipo]: !filtrosTipo[tipo] });
+            };
+
+            // Filtrar dias
+            const diasFiltrados = dadosAtivos.filter(d => filtrosTipo[d.tipoTreino]);
+            const diaAtual = diasFiltrados.find(d => d.dia === diaSelecionado) || diasFiltrados[0];
+
+            // Trocar perfil
+            const trocarPerfil = (novoPerfil) => {
+                setPerfilAtivo(novoPerfil);
+                setDiaSelecionado("Segunda");
+            };
+
+            return (
+                <div className="container">
+                    {/* Header */}
+                    <header className="main-header">
+                        <div className="logo">
+                            <div className="logo-icon">💪</div>
+                            <div>
+                                <h1>Dashboard de Treinos</h1>
+                                <span>v1.0 • Força & Condicionamento</span>
+                            </div>
+                        </div>
+
+                        <div className="profile-switcher">
+                            <button
+                                className={`profile-btn ${perfilAtivo === 'anna' ? 'active' : ''}`}
+                                onClick={() => trocarPerfil('anna')}
+                            >
+                                👩 Anna
+                            </button>
+                            <button
+                                className={`profile-btn ${perfilAtivo === 'user' ? 'active' : ''}`}
+                                onClick={() => trocarPerfil('user')}
+                            >
+                                👨 Meu Treino
+                            </button>
+                        </div>
+                    </header>
+
+                    {/* Stats */}
+                    <div className="stats-row">
+                        <div className="stat-card">
+                            <div className="stat-label">Perfil Ativo</div>
+                            <div className="stat-value">{perfilAtivo === 'anna' ? 'Anna' : 'Você'}</div>
+                            <div className="stat-detail">
+                                {perfilAtivo === 'user' ? '1,92m • 75kg' : 'Treino padrão'}
+                            </div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-label">Treinos de Força</div>
+                            <div className="stat-value">{treinosForca}</div>
+                            <div className="stat-detail">dias por semana</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-label">Cardio</div>
+                            <div className="stat-value">{treinosCardio}</div>
+                            <div className="stat-detail">sessões semanais</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-label">Concluídos</div>
+                            <div className="stat-value">{treinosConcluidos}/{dadosAtivos.length}</div>
+                            <div className="stat-detail">esta semana</div>
+                        </div>
+                    </div>
+
+                    {/* Progress */}
+                    <div className="progress-section">
+                        <div className="progress-header">
+                            <span className="progress-title">Progresso Semanal</span>
+                            <span className="progress-count">{Math.round(progressoPercentual)}% completo</span>
+                        </div>
+                        <div className="progress-bar">
+                            <div className="progress-fill" style={{ width: `${progressoPercentual}%` }}></div>
+                        </div>
+                    </div>
+
+                    {/* Filters */}
+                    <div className="filters-section">
+                        <span className="filter-label">📅 Dia:</span>
+                        <div className="day-tabs">
+                            {diasFiltrados.map(d => (
+                                <button
+                                    key={d.dia}
+                                    className={`day-tab ${diaSelecionado === d.dia ? 'active' : ''}`}
+                                    onClick={() => setDiaSelecionado(d.dia)}
+                                >
+                                    {d.dia.slice(0, 3)}
+                                    {d.concluido && <span className="check">✓</span>}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="type-filters">
+                            {Object.keys(filtrosTipo).map(tipo => (
+                                <label key={tipo} className="type-filter">
+                                    <input
+                                        type="checkbox"
+                                        checked={filtrosTipo[tipo]}
+                                        onChange={() => toggleFiltro(tipo)}
+                                    />
+                                    <span>{tipo}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Day Content */}
+                    {diaAtual ? (
+                        <DayContent
+                            dia={diaAtual}
+                            onToggle={toggleConclusao}
+                            isUserProfile={perfilAtivo === 'user'}
+                        />
+                    ) : (
+                        <div className="day-content">
+                            <div className="no-exercises">
+                                <div className="no-exercises-icon">🔍</div>
+                                <p>Nenhum treino encontrado com os filtros selecionados.</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Footer */}
+                    <footer className="footer">
+                        <p>Dashboard de Treinos • Desenvolvido com 💜 para Anna e família</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        // =====================================================
+        // COMPONENTE DO CONTEÚDO DO DIA
+        // =====================================================
+        function DayContent({ dia, onToggle, isUserProfile }) {
+            return (
+                <div className="day-content">
+                    <div className="day-header">
+                        <div className="day-info">
+                            <span className="day-type-badge">{dia.tipoTreino}</span>
+                            <h2>{dia.dia}</h2>
+                            <p className="day-description">{dia.descricaoGeral}</p>
+                        </div>
+                        <label className="complete-toggle">
+                            <input
+                                type="checkbox"
+                                checked={dia.concluido}
+                                onChange={() => onToggle(dia.dia)}
+                            />
+                            <span>{dia.concluido ? 'Concluído! ✓' : 'Marcar como feito'}</span>
+                        </label>
+                    </div>
+
+                    {/* Aviso de saúde para o perfil do usuário */}
+                    {isUserProfile && dia.avisoSaude && (
+                        <div className="health-notice">
+                            <span className="health-notice-icon">⚠️</span>
+                            <div className="health-notice-content">
+                                <h4>Atenção - Cuidados com a Coluna</h4>
+                                <p>{dia.avisoSaude}</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Protocolo (para HIIT, LISS, Descanso) */}
+                    {dia.protocolo && <ProtocolCard protocolo={dia.protocolo} />}
+
+                    {/* Exercícios */}
+                    {dia.exercicios && (
+                        <div className="exercises-grid">
+                            {dia.exercicios.map((ex, idx) => (
+                                <ExerciseCard key={idx} exercicio={ex} />
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Circuito Metabólico */}
+                    {dia.circuitoMetabolic && <CircuitCard circuito={dia.circuitoMetabolic} />}
+                </div>
+            );
+        }
+
+        // =====================================================
+        // COMPONENTE DE PROTOCOLO
+        // =====================================================
+        function ProtocolCard({ protocolo }) {
+            return (
+                <div className="protocol-card">
+                    <h3>📋 Protocolo: {protocolo.tipo}</h3>
+                    {protocolo.tempoAtivo && <p><strong>Ativo:</strong> {protocolo.tempoAtivo}</p>}
+                    {protocolo.tempoDescanso && <p><strong>Descanso:</strong> {protocolo.tempoDescanso}</p>}
+                    {protocolo.ciclos && <p><strong>Ciclos:</strong> {protocolo.ciclos}</p>}
+                    {protocolo.formato && <p><strong>Formato:</strong> {protocolo.formato}</p>}
+                    {protocolo.intensidade && <p><strong>Intensidade:</strong> {protocolo.intensidade}</p>}
+                    {protocolo.duracao && <p><strong>Duração:</strong> {protocolo.duracao}</p>}
+                    {protocolo.foco && <p><strong>Foco:</strong> {protocolo.foco}</p>}
+                    {protocolo.complemento && <p><strong>Complemento:</strong> {protocolo.complemento}</p>}
+                    {protocolo.sugestao && <p><strong>Sugestão:</strong> {protocolo.sugestao}</p>}
+                    {protocolo.instrucoes && <p><strong>Instruções:</strong> {protocolo.instrucoes}</p>}
+
+                    {protocolo.exercicios && protocolo.exercicios.length > 0 && (
+                        <div className="protocol-exercises">
+                            {protocolo.exercicios.map((ex, idx) => (
+                                <span key={idx} className="protocol-exercise-item">• {ex}</span>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // =====================================================
+        // COMPONENTE DE CIRCUITO
+        // =====================================================
+        function CircuitCard({ circuito }) {
+            return (
+                <div className="circuit-card">
+                    <h3>🔥 {circuito.nome}</h3>
+                    <p><strong>Protocolo:</strong> {circuito.protocolo}</p>
+                    {circuito.exercicios && circuito.exercicios.length > 0 && (
+                        <div className="protocol-exercises">
+                            {circuito.exercicios.map((ex, idx) => (
+                                <span key={idx} className="protocol-exercise-item">• {ex}</span>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // =====================================================
+        // COMPONENTE DE EXERCÍCIO
+        // =====================================================
+        function ExerciseCard({ exercicio }) {
+            const [expanded, setExpanded] = useState(false);
+
+            return (
+                <div className="exercise-card">
+                    <div className="exercise-header">
+                        <div className="exercise-title">
+                            <h3>{exercicio.nome}</h3>
+                            <span className="exercise-muscles">{exercicio.gruposMusculares}</span>
+                        </div>
+                        <span className="exercise-reps">{exercicio.seriesReps}</span>
+                    </div>
+
+                    <button className="details-btn" onClick={() => setExpanded(!expanded)}>
+                        {expanded ? '▲ Ocultar detalhes' : '▼ Ver detalhes de execução'}
+                    </button>
+
+                    {expanded && (
+                        <div className="exercise-details">
+                            <div className="detail-section">
+                                <h4>📝 Como executar</h4>
+                                <p>{exercicio.detalhesExecucao}</p>
+                            </div>
+                            {exercicio.errosComuns && exercicio.errosComuns.length > 0 && (
+                                <div className="detail-section">
+                                    <h4>⚠️ Erros comuns a evitar</h4>
+                                    <ul>
+                                        {exercicio.errosComuns.map((erro, idx) => (
+                                            <li key={idx}>{erro}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Renderizar
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
