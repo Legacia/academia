@@ -319,7 +319,63 @@
         .rest-emoji { font-size: 4rem; margin-bottom: 1rem; }
         .rest-title { font-size: 1.5rem; font-weight: 700; color: #10b981; }
         .rest-text { color: #94a3b8; margin-top: 0.5rem; }
+
+        /* Timer Flutuante */
+.timer-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #1e293b;
+    border: 2px solid #059669;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    width: 160px;
+    text-align: center;
+    display: none;
+}
+.timer-display {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #10b981;
+    font-variant-numeric: tabular-nums;
+}
+.timer-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+.timer-btn {
+    background: #334155;
+    border: none;
+    color: white;
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+.timer-btn.start { background: #059669; }
+.timer-btn.stop { background: #991b1b; }
+.timer-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #059669;
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    z-index: 999;
+}
     </style>
+    
 </head>
 <body>
     <header class="header">
@@ -367,6 +423,21 @@
         
         <!-- Workout Content -->
         <div id="workout-content"></div>
+        
+        <div id="timer-toggle" class="timer-toggle-btn" onclick="toggleTimerUI()">⏱️</div>
+<div id="timer-ui" class="timer-container">
+    <div class="timer-display" id="timer-display">00:00</div>
+    <div class="timer-controls">
+        <button class="timer-btn start" onclick="startTimer()">Start</button>
+        <button class="timer-btn stop" onclick="pauseTimer()">Pause</button>
+        <button class="timer-btn" onclick="resetTimer()">Reset</button>
+    </div>
+    <div class="timer-controls">
+        <button class="timer-btn" onclick="setTimer(30)">30s</button>
+        <button class="timer-btn" onclick="setTimer(45)">45s</button>
+        <button class="timer-btn" onclick="setTimer(60)">1m</button>
+    </div>
+</div>
         
         <footer class="footer">
             Dashboard de Treinos • Feito com 💚 para Anna e Legacia
@@ -857,6 +928,52 @@
         // Inicializar
         initState();
         renderAll();
+
+        let timerInterval;
+let secondsRemaining = 0;
+
+function toggleTimerUI() {
+    const ui = document.getElementById('timer-ui');
+    ui.style.display = ui.style.display === 'none' || ui.style.display === '' ? 'block' : 'none';
+}
+
+function updateDisplay() {
+    const mins = Math.floor(secondsRemaining / 60);
+    const secs = secondsRemaining % 60;
+    document.getElementById('timer-display').textContent = 
+        `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function setTimer(secs) {
+    pauseTimer();
+    secondsRemaining = secs;
+    updateDisplay();
+}
+
+function startTimer() {
+    if (timerInterval) return;
+    if (secondsRemaining <= 0) return;
+    
+    timerInterval = setInterval(() => {
+        secondsRemaining--;
+        updateDisplay();
+        if (secondsRemaining <= 0) {
+            pauseTimer();
+            alert("Tempo finalizado!");
+        }
+    }, 1000);
+}
+
+function pauseTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+}
+
+function resetTimer() {
+    pauseTimer();
+    secondsRemaining = 0;
+    updateDisplay();
+}
     </script>
 </body>
 </html>
