@@ -264,6 +264,109 @@
             left: 0;
         }
         
+        /* Load Tracking */
+        .load-tracking {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-top: 0.75rem;
+        }
+        .load-tracking-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .load-tracking-title {
+            font-size: 0.75rem;
+            color: #10b981;
+            font-weight: 600;
+        }
+        .load-input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .load-input {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+        }
+        .load-input:focus {
+            outline: none;
+            border-color: #10b981;
+        }
+        .load-input::placeholder {
+            color: #475569;
+        }
+        .save-load-btn {
+            background: #059669;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .save-load-btn:hover {
+            background: #047857;
+        }
+        .load-history {
+            margin-top: 0.75rem;
+        }
+        .load-history-title {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+        .load-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.375rem 0.5rem;
+            background: #0f172a;
+            border-radius: 0.25rem;
+            margin-bottom: 0.25rem;
+            font-size: 0.813rem;
+        }
+        .load-value {
+            color: #10b981;
+            font-weight: 600;
+        }
+        .load-date {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+        .load-indicator {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.75rem;
+        }
+        .load-indicator.up {
+            background: #064e3b;
+            color: #10b981;
+        }
+        .load-indicator.same {
+            background: #422006;
+            color: #fbbf24;
+        }
+        .load-indicator.down {
+            background: #450a0a;
+            color: #f87171;
+        }
+        
         /* Protocol Card */
         .protocol-card {
             background: #422006;
@@ -319,63 +422,117 @@
         .rest-emoji { font-size: 4rem; margin-bottom: 1rem; }
         .rest-title { font-size: 1.5rem; font-weight: 700; color: #10b981; }
         .rest-text { color: #94a3b8; margin-top: 0.5rem; }
-
-        /* Timer Flutuante */
-.timer-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #1e293b;
-    border: 2px solid #059669;
-    border-radius: 1rem;
-    padding: 1rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    width: 160px;
-    text-align: center;
-    display: none;
-}
-.timer-display {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #10b981;
-    font-variant-numeric: tabular-nums;
-}
-.timer-controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
-    margin-top: 0.5rem;
-}
-.timer-btn {
-    background: #334155;
-    border: none;
-    color: white;
-    padding: 0.4rem 0.6rem;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    cursor: pointer;
-}
-.timer-btn.start { background: #059669; }
-.timer-btn.stop { background: #991b1b; }
-.timer-toggle-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #059669;
-    width: 50px;
-    height: 50px;
-    border-radius: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-    z-index: 999;
-}
+        
+        /* HIIT Timer */
+        .hiit-timer-container {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            border: 2px solid #6366f1;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 1rem 0.5rem;
+        }
+        .timer-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .timer-header h3 {
+            color: #a5b4fc;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .timer-phase {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #4f46e5;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        .timer-phase.work {
+            background: #ef4444;
+            animation: pulse-work 1s infinite;
+        }
+        .timer-phase.rest {
+            background: #10b981;
+        }
+        @keyframes pulse-work {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .timer-display {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        .timer-countdown {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fbbf24;
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+            font-variant-numeric: tabular-nums;
+        }
+        .timer-rounds {
+            color: #a5b4fc;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+        .timer-progress-bar {
+            height: 8px;
+            background: #312e81;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        .timer-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #fbbf24);
+            transition: width 0.1s linear;
+        }
+        .timer-controls {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        .timer-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        .timer-btn.start {
+            background: #10b981;
+            color: white;
+        }
+        .timer-btn.start:hover {
+            background: #059669;
+        }
+        .timer-btn.pause {
+            background: #f59e0b;
+            color: white;
+        }
+        .timer-btn.pause:hover {
+            background: #d97706;
+        }
+        .timer-btn.reset {
+            background: #6b7280;
+            color: white;
+        }
+        .timer-btn.reset:hover {
+            background: #4b5563;
+        }
+        .timer-info {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #312e81;
+        }
     </style>
-    
 </head>
 <body>
     <header class="header">
@@ -424,21 +581,6 @@
         <!-- Workout Content -->
         <div id="workout-content"></div>
         
-        <div id="timer-toggle" class="timer-toggle-btn" onclick="toggleTimerUI()">⏱️</div>
-<div id="timer-ui" class="timer-container">
-    <div class="timer-display" id="timer-display">00:00</div>
-    <div class="timer-controls">
-        <button class="timer-btn start" onclick="startTimer()">Start</button>
-        <button class="timer-btn stop" onclick="pauseTimer()">Pause</button>
-        <button class="timer-btn" onclick="resetTimer()">Reset</button>
-    </div>
-    <div class="timer-controls">
-        <button class="timer-btn" onclick="setTimer(30)">30s</button>
-        <button class="timer-btn" onclick="setTimer(45)">45s</button>
-        <button class="timer-btn" onclick="setTimer(60)">1m</button>
-    </div>
-</div>
-        
         <footer class="footer">
             Dashboard de Treinos • Feito com 💚 para Anna e Legacia
         </footer>
@@ -459,14 +601,15 @@
                     {
                         dia: "Segunda",
                         tipoTreino: "Força",
-                        descricaoGeral: "Pernas - Foco em quadríceps, glúteos e posterior",
+                        descricaoGeral: "🍑 Lower Body - FOCO em Glúteos, Quadríceps e Posterior",
                         exercicios: [
-                            { nome: "Agachamento com Barra", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "4x10-12", detalhesExecucao: "Usar o suporte de supino para a barra. Descer até as coxas ficarem paralelas ao chão.", errosComuns: ["Joelhos colapsando para dentro", "Tronco muito inclinado"] },
-                            { nome: "Cadeira Extensora (Multi Speedo)", gruposMusculares: "Quadríceps", seriesReps: "3x12-15", detalhesExecucao: "Extensão completa no topo, segurando 1 segundo.", errosComuns: ["Movimento muito rápido", "Não completar extensão"] },
-                            { nome: "Afundo com Halteres", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "3x12 cada perna", detalhesExecucao: "Dar passada longa, joelho traseiro quase tocando o chão.", errosComuns: ["Passada curta demais", "Tronco caindo para frente"] },
-                            { nome: "Stiff com Barra ou Halteres", gruposMusculares: "Posterior de coxa, Glúteos", seriesReps: "3x12", detalhesExecucao: "Descer a barra/halteres deslizando nas pernas. Sentir alongar posterior.", errosComuns: ["Arredondar a lombar", "Dobrar demais os joelhos"] },
-                            { nome: "Elevação Pélvica com Barra", gruposMusculares: "Glúteos", seriesReps: "4x15", detalhesExecucao: "Apoiar escápulas no banco, barra sobre o quadril. Subir espremendo glúteos.", errosComuns: ["Hiperextender lombar", "Não subir completamente"] },
-                            { nome: "Panturrilha em Pé (no Step)", gruposMusculares: "Panturrilhas", seriesReps: "4x20", detalhesExecucao: "Ficar na borda do step, descer calcanhar e subir na ponta dos pés.", errosComuns: ["Movimento parcial", "Velocidade excessiva"] }
+                            { nome: "Agachamento com Barra", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "4x10-12", detalhesExecucao: "Usar o suporte de supino para a barra. Descer ATÉ PARALELO para máxima ativação de glúteos.", errosComuns: ["Joelhos colapsando para dentro", "Não descer o suficiente"] },
+                            { nome: "Hip Thrust com Barra 🍑", gruposMusculares: "Glúteos (foco principal)", seriesReps: "4x12-15", detalhesExecucao: "Apoiar escápulas no banco, barra sobre quadril. Empurrar com os GLÚTEOS, pausa de 2s no topo espremendo!", errosComuns: ["Hiperextender lombar", "Usar quadríceps demais", "Não pausar no topo"] },
+                            { nome: "Cadeira Extensora (Multi Speedo)", gruposMusculares: "Quadríceps", seriesReps: "3x15", detalhesExecucao: "Extensão completa no topo, segurando 1 segundo. Foco na queimação!", errosComuns: ["Movimento muito rápido", "Não completar extensão"] },
+                            { nome: "Stiff com Barra", gruposMusculares: "Posterior, Glúteos", seriesReps: "4x12", detalhesExecucao: "Barra descendo PRÓXIMA às pernas. Sentir alongar posterior e glúteos. Apertar glúteos no topo!", errosComuns: ["Arredondar a lombar", "Dobrar demais os joelhos", "Não espremer glúteos"] },
+                            { nome: "Abdução de Quadril na Multi Speedo 🍑", gruposMusculares: "Glúteo Médio (lateral)", seriesReps: "3x20 cada", detalhesExecucao: "Abrir perna contra resistência. Controlar na volta. ESSENCIAL para quadril feminino!", errosComuns: ["Movimento muito rápido", "Usar impulso"] },
+                            { nome: "Afundo Estacionário com Halteres", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "3x12 cada", detalhesExecucao: "Passada LONGA para enfatizar glúteos. Descer controlado.", errosComuns: ["Passada curta", "Joelho passando do pé"] },
+                            { nome: "Panturrilha em Pé (Step com Halter)", gruposMusculares: "Panturrilhas", seriesReps: "4x20", detalhesExecucao: "Amplitude COMPLETA. Pausa 1s no topo.", errosComuns: ["Movimento parcial", "Velocidade excessiva"] }
                         ]
                     },
                     {
@@ -484,16 +627,18 @@
                     {
                         dia: "Quarta",
                         tipoTreino: "Força",
-                        descricaoGeral: "Superior + Core - Foco em empurrar e puxar",
+                        descricaoGeral: "💪 Upper Body - FOCO em Costas Largas e Braços Definidos",
                         exercicios: [
-                            { nome: "Supino Reto com Barra", gruposMusculares: "Peitoral, Tríceps, Ombros", seriesReps: "4x10", detalhesExecucao: "Barra descendo até tocar o peito, cotovelos a 45 graus.", errosComuns: ["Cotovelos muito abertos", "Tirar glúteo do banco"] },
-                            { nome: "Peck Deck (Multi Speedo)", gruposMusculares: "Peitoral", seriesReps: "3x12", detalhesExecucao: "Unir os braços na frente, espremendo o peitoral.", errosComuns: ["Usar impulso do corpo", "Não completar o movimento"] },
-                            { nome: "Remada Curvada com Barra", gruposMusculares: "Dorsais, Bíceps", seriesReps: "4x10", detalhesExecucao: "Inclinação de 45 graus, puxar barra até o abdômen.", errosComuns: ["Subir o tronco durante a remada", "Não retrair escápulas"] },
-                            { nome: "Polia Alta (Multi Speedo)", gruposMusculares: "Dorsais", seriesReps: "3x12", detalhesExecucao: "Puxar a barra até a altura do peito.", errosComuns: ["Puxar atrás da cabeça", "Usar muito impulso"] },
-                            { nome: "Desenvolvimento com Halteres", gruposMusculares: "Ombros", seriesReps: "3x12", detalhesExecucao: "Sentada no banco, empurrar halteres para cima.", errosComuns: ["Arquear demais a lombar", "Não alinhar cotovelos"] },
-                            { nome: "Rosca Direta com Barra W", gruposMusculares: "Bíceps", seriesReps: "3x12", detalhesExecucao: "Cotovelos fixos ao lado do corpo.", errosComuns: ["Balançar o corpo", "Cotovelos se movendo"] },
-                            { nome: "Tríceps Polia (Multi Speedo)", gruposMusculares: "Tríceps", seriesReps: "3x12", detalhesExecucao: "Empurrar corda/barra para baixo, estendendo completamente.", errosComuns: ["Cotovelos saindo do lugar", "Movimento parcial"] },
-                            { nome: "Prancha Frontal", gruposMusculares: "Core", seriesReps: "3x45s", detalhesExecucao: "Corpo alinhado, abdômen contraído.", errosComuns: ["Quadril subindo", "Quadril caindo"] }
+                            { nome: "Polia Alta Pegada Aberta (Multi Speedo)", gruposMusculares: "Dorsais (largura)", seriesReps: "4x12", detalhesExecucao: "Puxar até linha dos mamilos. Retrair escápulas! Pegada larga para costas em V.", errosComuns: ["Usar muito braço", "Não retrair escápulas", "Balançar corpo"] },
+                            { nome: "Remada Curvada com Barra", gruposMusculares: "Dorsais (espessura), Trapézio", seriesReps: "4x10", detalhesExecucao: "45° de inclinação. Puxar até ABDÔMEN. Espremer escápulas!", errosComuns: ["Subir o tronco", "Não levar até o abdômen"] },
+                            { nome: "Remada Unilateral com Halter", gruposMusculares: "Dorsais, Lombar", seriesReps: "3x12 cada", detalhesExecucao: "Apoiar no banco. Puxar halter até o quadril. Amplitude MÁXIMA!", errosComuns: ["Rotacionar tronco", "Usar muito bíceps"] },
+                            { nome: "Pullover com Halter (banco)", gruposMusculares: "Dorsais, Peitoral, Serrátil", seriesReps: "3x15", detalhesExecucao: "Halter atrás da cabeça, subir em arco. ÓTIMO para costas e caixa torácica!", errosComuns: ["Dobrar muito cotovelos", "Não alongar"] },
+                            { nome: "Supino Reto com Barra", gruposMusculares: "Peitoral, Tríceps", seriesReps: "4x10", detalhesExecucao: "Barra até o peito, cotovelos a 45°.", errosComuns: ["Cotovelos muito abertos", "Tirar glúteo"] },
+                            { nome: "Rosca Direta com Barra Reta", gruposMusculares: "Bíceps", seriesReps: "4x12", detalhesExecucao: "Pegada na largura dos ombros. Cotovelos FIXOS. Subir controlado, descer LENTO (3s). Pulsos alinhados.", errosComuns: ["Balançar corpo", "Descer rápido demais", "Dobrar pulsos"] },
+                            { nome: "Rosca Martelo com Halteres", gruposMusculares: "Bíceps, Braquial, Antebraços", seriesReps: "3x15", detalhesExecucao: "Pegada neutra (palmas frente a frente). Cotovelos colados. Braço grosso!", errosComuns: ["Cotovelos abrindo", "Usar impulso"] },
+                            { nome: "Tríceps Testa com Halteres", gruposMusculares: "Tríceps (cabeça longa)", seriesReps: "4x12", detalhesExecucao: "Deitada no banco. Halteres até testa, cotovelos FIXOS apontando pro teto. Palmas frente a frente (neutro).", errosComuns: ["Cotovelos abrindo", "Descer na cabeça", "Abrir os halteres"] },
+                            { nome: "Tríceps Polia com Corda (Multi Speedo)", gruposMusculares: "Tríceps (definição)", seriesReps: "3x15", detalhesExecucao: "Abrir corda no final do movimento. Espremer tríceps!", errosComuns: ["Não abrir corda", "Cotovelos saindo"] },
+                            { nome: "Prancha Frontal", gruposMusculares: "Core", seriesReps: "3x60s", detalhesExecucao: "Corpo reto como tábua. Abdômen contraído!", errosComuns: ["Quadril subindo/caindo"] }
                         ]
                     },
                     {
@@ -511,17 +656,20 @@
                     {
                         dia: "Sexta",
                         tipoTreino: "Força",
-                        descricaoGeral: "Pernas + Circuito Metabólico",
+                        descricaoGeral: "🍑 Lower Body - GLÚTEOS e Posterior Intenso + Finalizador",
                         exercicios: [
-                            { nome: "Leg Press (se disponível) ou Hack Squat", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "4x12", detalhesExecucao: "Usar agachamento profundo com halteres como alternativa.", errosComuns: ["Joelhos passando demais dos pés", "Não ativar core"] },
-                            { nome: "Cadeira Extensora (Multi Speedo)", gruposMusculares: "Quadríceps", seriesReps: "3x15", detalhesExecucao: "Drop set no última série.", errosComuns: ["Movimento muito rápido"] },
-                            { nome: "Afundo Búlgaro", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "3x10 cada", detalhesExecucao: "Pé traseiro elevado no banco.", errosComuns: ["Perder equilíbrio", "Joelho passando do pé"] },
-                            { nome: "Abdução de Quadril Deitada", gruposMusculares: "Glúteo médio", seriesReps: "3x20 cada", detalhesExecucao: "Deitar de lado, elevar perna controladamente.", errosComuns: ["Usar impulso", "Rotacionar quadril"] }
+                            { nome: "Agachamento Sumô com Halter", gruposMusculares: "Glúteos, Adutores, Quadríceps", seriesReps: "4x15", detalhesExecucao: "Pés LARGOS (mais que ombros), pontas abertas 45°. Descer entre as pernas. ÓTIMO para glúteos!", errosComuns: ["Pés muito juntos", "Joelhos colapsando"] },
+                            { nome: "Afundo Búlgaro com Halteres 🍑", gruposMusculares: "Glúteos, Quadríceps", seriesReps: "4x12 cada", detalhesExecucao: "Pé traseiro elevado no banco. Passada LONGA para máxima ativação de glúteos. Tortura!", errosComuns: ["Passada curta", "Perder equilíbrio"] },
+                            { nome: "Stiff Unilateral com Halter", gruposMusculares: "Posterior, Glúteos, Equilíbrio", seriesReps: "3x12 cada", detalhesExecucao: "Uma perna só! Descer halter na frente, perna livre vai atrás. Conexão mente-músculo!", errosComuns: ["Perder equilíbrio", "Arredondar lombar"] },
+                            { nome: "Cadeira Extensora DROP SET (Multi Speedo)", gruposMusculares: "Quadríceps (definição)", seriesReps: "3x12+8+6", detalhesExecucao: "12 reps, reduz peso SEM descanso, +8 reps, reduz de novo, +6 reps. QUEIMAÇÃO!", errosComuns: ["Descansar entre drops"] },
+                            { nome: "Elevação Pélvica Unilateral", gruposMusculares: "Glúteos (isolamento máximo)", seriesReps: "3x15 cada", detalhesExecucao: "Uma perna! Outra estendida no ar. Apertar glúteo no topo 2 segundos!", errosComuns: ["Não pausar no topo", "Hiperextender lombar"] },
+                            { nome: "Coice de Glúteo no Espaldar 🍑", gruposMusculares: "Glúteos", seriesReps: "3x20 cada", detalhesExecucao: "De 4 apoios, chutar perna para trás e cima com caneleira. Espremer glúteo!", errosComuns: ["Arquear lombar", "Usar impulso"] },
+                            { nome: "Panturrilha Sentado (Multi ou com halter)", gruposMusculares: "Panturrilhas (sóleo)", seriesReps: "4x25", detalhesExecucao: "Sentada, halter sobre joelhos. Subir na ponta dos pés. Alto volume!", errosComuns: ["Amplitude parcial"] }
                         ],
                         circuitoMetabolic: {
-                            nome: "Circuito Queima",
-                            protocolo: "3 rounds - 30s cada exercício, 10s descanso",
-                            exercicios: ["Burpees", "Mountain Climbers", "Jumping Jacks", "Polichinelo", "Corda (se disponível)"]
+                            nome: "🔥 Circuito Queima-Gordura",
+                            protocolo: "4 rounds - 40s trabalho / 20s descanso por exercício",
+                            exercicios: ["Burpees", "Mountain Climbers", "Agachamento com Salto", "Prancha com Joelho ao Cotovelo", "Jumping Jacks"]
                         }
                     },
                     {
@@ -553,32 +701,34 @@
                     {
                         dia: "Segunda",
                         tipoTreino: "Força",
-                        descricaoGeral: "Inferiores - Adaptado para coluna",
-                        avisoSaude: "Evitar carga axial excessiva. Priorizar exercícios sentado/deitado.",
+                        descricaoGeral: "💪 Inferiores - Hipertrofia Segura + Proteção da Coluna",
+                        avisoSaude: "✅ Exercícios escolhidos para crescimento muscular SEM comprometer sua coluna!",
                         exercicios: [
-                            { nome: "Goblet Squat com Halter", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "4x12", detalhesExecucao: "Halter na frente do peito (carga frontal protege coluna). Descer controlado.", errosComuns: ["Inclinar tronco para frente", "Joelhos colapsando"] },
-                            { nome: "Cadeira Extensora (Multi Speedo)", gruposMusculares: "Quadríceps", seriesReps: "4x15", detalhesExecucao: "SEM CARGA AXIAL - exercício ideal. Extensão completa e controlada.", errosComuns: ["Movimento explosivo"] },
-                            { nome: "Afundo Estático com Halteres", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "3x12 cada", detalhesExecucao: "NÃO caminhar - manter posição fixa. Menos impacto na coluna.", errosComuns: ["Passada muito curta"] },
-                            { nome: "Step-Up com Halteres", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "3x12 cada", detalhesExecucao: "Subir no step de forma controlada, sem impulso.", errosComuns: ["Usar impulso da perna de trás"] },
-                            { nome: "Ponte de Glúteos com Halter", gruposMusculares: "Glúteos", seriesReps: "4x15", detalhesExecucao: "Deitado - ZERO compressão. Halter sobre quadril.", errosComuns: ["Hiperextender lombar no topo"] },
-                            { nome: "Stiff com Halteres (amplitude REDUZIDA)", gruposMusculares: "Posterior de coxa", seriesReps: "3x12", detalhesExecucao: "Descer apenas até a canela. MANTER LOMBAR NEUTRA sempre.", errosComuns: ["Descer demais", "Arredondar costas"] },
-                            { nome: "Abdução de Quadril Deitado", gruposMusculares: "Glúteo médio", seriesReps: "3x20", detalhesExecucao: "Deitado de lado, elevar a perna. Sem carga na coluna.", errosComuns: ["Rotacionar quadril"] },
-                            { nome: "Panturrilha em Pé (no Step)", gruposMusculares: "Panturrilhas", seriesReps: "4x20", detalhesExecucao: "Apoiar na parede para equilíbrio se necessário.", errosComuns: ["Movimento parcial"] }
+                            { nome: "Goblet Squat com Halter", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "4x12-15", detalhesExecucao: "Halter FRONTAL protege coluna. Descer PROFUNDO para ativar glúteos. Pausa 1s embaixo!", errosComuns: ["Não descer o suficiente", "Joelhos colapsando"] },
+                            { nome: "Cadeira Extensora SUPER SÉRIE (Multi Speedo)", gruposMusculares: "Quadríceps (definição)", seriesReps: "4x15+10", detalhesExecucao: "15 reps normais + 10 parciais no topo. SEM CARGA AXIAL - perfeito para você!", errosComuns: ["Movimento explosivo"] },
+                            { nome: "Ponte de Glúteos com Halter PESADO 🍑", gruposMusculares: "Glúteos (hipertrofia)", seriesReps: "4x15", detalhesExecucao: "Deitado - ZERO risco! Halter sobre quadril. Pausa 2s no topo espremendo glúteos!", errosComuns: ["Não pausar no topo", "Hiperextender lombar"] },
+                            { nome: "Abdução de Quadril com Elástico (em pé)", gruposMusculares: "Glúteo médio (estabilidade + estética)", seriesReps: "4x20 cada", detalhesExecucao: "Elástico no tornozelo. Abrir perna lateralmente. ESSENCIAL para sua lombar!", errosComuns: ["Inclinar tronco"] },
+                            { nome: "Step-Up com Halteres", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "3x15 cada", detalhesExecucao: "Step alto para mais glúteo. Subir controlado, força do calcanhar.", errosComuns: ["Usar impulso da perna de trás"] },
+                            { nome: "Stiff Leve com Halteres (amplitude reduzida)", gruposMusculares: "Posterior (alongamento seguro)", seriesReps: "3x15", detalhesExecucao: "Apenas até canela. Foco: conexão mente-músculo. LOMBAR NEUTRA!", errosComuns: ["Descer demais", "Peso excessivo"] },
+                            { nome: "Afundo Estático com Halteres", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "3x12 cada", detalhesExecucao: "Posição fixa (sem caminhar). Passada longa. Tempo sob tensão!", errosComuns: ["Passada curta"] },
+                            { nome: "Panturrilha Sentado com Halter", gruposMusculares: "Panturrilhas (sóleo)", seriesReps: "4x25", detalhesExecucao: "Sentado - ZERO compressão. Halter sobre joelhos. Alto volume!", errosComuns: ["Amplitude parcial"] }
                         ]
                     },
                     {
                         dia: "Terça",
                         tipoTreino: "Força",
-                        descricaoGeral: "Superiores - Empurrar",
-                        avisoSaude: "Evitar exercícios que comprimam a coluna. Preferir sentado com apoio.",
+                        descricaoGeral: "💪 Superiores - HIPERTROFIA de Peito, Ombros e Tríceps",
+                        avisoSaude: "✅ Todos exercícios deitado ou sentado COM APOIO - sua coluna está protegida!",
                         exercicios: [
-                            { nome: "Supino Reto com Barra", gruposMusculares: "Peitoral, Tríceps", seriesReps: "4x10", detalhesExecucao: "Deitado - ZERO compressão. Manter lombar neutra no banco.", errosComuns: ["Arquear demais a lombar"] },
-                            { nome: "Supino Inclinado com Halteres", gruposMusculares: "Peitoral superior", seriesReps: "3x12", detalhesExecucao: "Banco em 30-45 graus. Manter costas apoiadas.", errosComuns: ["Tirar costas do banco"] },
-                            { nome: "Peck Deck (Multi Speedo)", gruposMusculares: "Peitoral", seriesReps: "3x12", detalhesExecucao: "Sentado com costas bem apoiadas.", errosComuns: ["Inclinar tronco para frente"] },
-                            { nome: "Desenvolvimento Sentado com Halteres", gruposMusculares: "Ombros", seriesReps: "4x12", detalhesExecucao: "Banco vertical COM APOIO LOMBAR. Subir controlado.", errosComuns: ["Arquear lombar"] },
-                            { nome: "Elevação Lateral com Halteres", gruposMusculares: "Ombro lateral", seriesReps: "3x15", detalhesExecucao: "Pode fazer sentado. Peso leve, controle total.", errosComuns: ["Usar impulso do corpo"] },
-                            { nome: "Tríceps Polia (Multi Speedo)", gruposMusculares: "Tríceps", seriesReps: "3x12", detalhesExecucao: "Em pé com joelhos levemente flexionados.", errosComuns: ["Curvar tronco para frente"] },
-                            { nome: "Tríceps Testa com Barra W", gruposMusculares: "Tríceps", seriesReps: "3x12", detalhesExecucao: "Deitado - excelente para coluna.", errosComuns: ["Movimentar cotovelos"] }
+                            { nome: "Supino Reto com Barra", gruposMusculares: "Peitoral (massa)", seriesReps: "4x8-10", detalhesExecucao: "Deitado - ZERO compressão! Barra até peito. Lombar levemente arqueada (natural).", errosComuns: ["Arquear MUITO", "Tirar glúteo"] },
+                            { nome: "Supino Inclinado com Halteres", gruposMusculares: "Peitoral superior (estética)", seriesReps: "4x12", detalhesExecucao: "30-45°. COSTAS COLADAS no banco. Descer até sentir alongar.", errosComuns: ["Tirar costas do banco"] },
+                            { nome: "Peck Deck (Multi Speedo)", gruposMusculares: "Peitoral (isolamento)", seriesReps: "3x15", detalhesExecucao: "Sentado, apoio total. Espremer peito no centro. Tempo sob tensão!", errosComuns: ["Movimento explosivo"] },
+                            { nome: "Desenvolvimento Sentado com Halteres", gruposMusculares: "Ombros (volume)", seriesReps: "4x12", detalhesExecucao: "Banco VERTICAL com apoio lombar. Subir controlado, pausa no topo.", errosComuns: ["Arquear lombar", "Descer rápido"] },
+                            { nome: "Elevação Lateral com Halteres", gruposMusculares: "Ombro lateral (largura)", seriesReps: "4x15", detalhesExecucao: "Pode fazer sentado. Pausa 1s no topo. Peso moderado, controle!", errosComuns: ["Peso excessivo", "Subir com impulso"] },
+                            { nome: "Elevação Frontal com Halter", gruposMusculares: "Ombro anterior", seriesReps: "3x12", detalhesExecucao: "Sentado ou em pé. Subir até altura dos olhos.", errosComuns: ["Subir demais", "Balançar corpo"] },
+                            { nome: "Tríceps Testa com Halteres", gruposMusculares: "Tríceps (cabeça longa)", seriesReps: "4x12", detalhesExecucao: "Deitado - perfeito para coluna! Halteres até testa, cotovelos fixos apontando pro teto. Pegada neutra (palmas frente a frente).", errosComuns: ["Cotovelos abrindo", "Abrir os halteres"] },
+                            { nome: "Tríceps Polia com Corda (Multi Speedo)", gruposMusculares: "Tríceps (definição)", seriesReps: "3x15", detalhesExecucao: "Abrir corda no final. Espremer tríceps! Joelhos levemente flexionados.", errosComuns: ["Curvar tronco"] },
+                            { nome: "Tríceps Kickback com Halteres", gruposMusculares: "Tríceps (isolamento)", seriesReps: "3x15 cada", detalhesExecucao: "Apoiar mão e joelho no banco. Cotovelo fixo, estender apenas antebraço.", errosComuns: ["Movimentar cotovelo"] }
                         ]
                     },
                     {
@@ -601,48 +751,54 @@
                     {
                         dia: "Quinta",
                         tipoTreino: "Força",
-                        descricaoGeral: "Superiores - Puxar",
-                        avisoSaude: "Evitar remadas em pé. Preferir versões com apoio.",
+                        descricaoGeral: "💪 Superiores - COSTAS EM V + Bíceps Volumosos",
+                        avisoSaude: "✅ Exercícios com apoio ou sentado - ZERO stress na coluna!",
                         exercicios: [
-                            { nome: "Polia Alta (Multi Speedo)", gruposMusculares: "Dorsais", seriesReps: "4x12", detalhesExecucao: "Puxar até o peito, NUNCA atrás da cabeça.", errosComuns: ["Puxar atrás da cabeça", "Inclinar muito para trás"] },
-                            { nome: "Remada Baixa (Multi Speedo)", gruposMusculares: "Dorsais, Romboides", seriesReps: "4x12", detalhesExecucao: "Sentado com peito apoiado se possível.", errosComuns: ["Puxar com a lombar"] },
-                            { nome: "Remada Unilateral com Halter (com apoio)", gruposMusculares: "Dorsais", seriesReps: "3x12 cada", detalhesExecucao: "Apoiar mão e joelho no banco. Coluna paralela ao chão.", errosComuns: ["Rotacionar tronco", "Não apoiar corretamente"] },
-                            { nome: "Face Pull (Polia Alta)", gruposMusculares: "Deltóide posterior, Romboides", seriesReps: "3x15", detalhesExecucao: "Puxar corda em direção ao rosto.", errosComuns: ["Usar peso excessivo"] },
-                            { nome: "Rosca Direta com Barra W", gruposMusculares: "Bíceps", seriesReps: "3x12", detalhesExecucao: "Pode fazer sentado para mais estabilidade.", errosComuns: ["Balançar corpo"] },
-                            { nome: "Rosca Martelo com Halteres", gruposMusculares: "Bíceps, Braquial", seriesReps: "3x12", detalhesExecucao: "Alternado ou simultâneo, sentado no banco.", errosComuns: ["Usar impulso"] },
-                            { nome: "Encolhimento com Halteres", gruposMusculares: "Trapézio", seriesReps: "3x15", detalhesExecucao: "Elevar ombros em direção às orelhas.", errosComuns: ["Rotacionar ombros"] }
+                            { nome: "Polia Alta Pegada Aberta (Multi Speedo)", gruposMusculares: "Dorsais (largura - V)", seriesReps: "4x12", detalhesExecucao: "Pegada LARGA. Puxar até linha dos mamilos. Peito para frente. Costas largas!", errosComuns: ["Puxar atrás da cabeça", "Inclinar demais"] },
+                            { nome: "Remada Baixa Pegada Fechada (Multi Speedo)", gruposMusculares: "Dorsais (espessura)", seriesReps: "4x12", detalhesExecucao: "Sentado - apoio total. Puxar até abdômen. Espremer escápulas!", errosComuns: ["Puxar com lombar", "Não retrair escápulas"] },
+                            { nome: "Remada Unilateral com Halter (apoiado)", gruposMusculares: "Dorsais (simetria)", seriesReps: "4x12 cada", detalhesExecucao: "Mão e joelho no banco. Coluna RETA. Puxar até quadril. Amplitude máxima!", errosComuns: ["Rotacionar tronco", "Usar bíceps demais"] },
+                            { nome: "Pullover com Halter", gruposMusculares: "Dorsais, Serrátil, Peitoral", seriesReps: "3x15", detalhesExecucao: "Deitado - ZERO compressão! Halter atrás da cabeça em arco. Caixa torácica!", errosComuns: ["Dobrar muito cotovelos"] },
+                            { nome: "Face Pull com Corda (Polia)", gruposMusculares: "Ombro posterior, Trapézio", seriesReps: "4x20", detalhesExecucao: "Puxar corda pro rosto. ESSENCIAL para postura e estética de ombros!", errosComuns: ["Peso excessivo", "Não abrir cotovelos"] },
+                            { nome: "Encolhimento com Halteres", gruposMusculares: "Trapézio superior", seriesReps: "3x15", detalhesExecucao: "Pode fazer sentado. Subir ombros, pausa 2s no topo. Trapézio poderoso!", errosComuns: ["Rotacionar ombros"] },
+                            { nome: "Rosca Direta com Barra Reta", gruposMusculares: "Bíceps", seriesReps: "4x12", detalhesExecucao: "Sentado com costas apoiadas. Pegada largura dos ombros. Cotovelos FIXOS. Descer LENTO (3s). Pulsos alinhados.", errosComuns: ["Balançar corpo", "Dobrar pulsos"] },
+                            { nome: "Rosca Martelo com Halteres", gruposMusculares: "Bíceps, Braquial, Antebraços", seriesReps: "4x15", detalhesExecucao: "Sentado. Palmas frente a frente. Braços grossos!", errosComuns: ["Usar impulso"] },
+                            { nome: "Rosca Concentrada com Halter", gruposMusculares: "Bíceps (pico)", seriesReps: "3x12 cada", detalhesExecucao: "Sentado, cotovelo apoiado na coxa. Foco total no bíceps!", errosComuns: ["Usar corpo para ajudar"] }
                         ]
                     },
                     {
                         dia: "Sexta",
-                        tipoTreino: "LISS",
-                        descricaoGeral: "Cardio Leve + Core de Manutenção",
-                        avisoSaude: "Cardio de baixo impacto - bike é melhor que esteira para sua coluna.",
-                        protocolo: {
-                            duracao: "30-40 minutos",
-                            tipo: "Bike Ergométrica (preferencial) ou Caminhada Leve",
-                            instrucoes: "Manter frequência cardíaca moderada. Evitar impacto.",
-                            sugestao: "Após o cardio, fazer Dead Bug 2x10 e Prancha 2x30s para manutenção do core"
-                        },
-                        exercicios: []
+                        tipoTreino: "Força",
+                        descricaoGeral: "💪 Pump Day - Braços + Ombros + Core",
+                        avisoSaude: "✅ Dia de volume alto com exercícios SEGUROS - finalizador da semana!",
+                        exercicios: [
+                            { nome: "Rosca 21 com Barra Reta", gruposMusculares: "Bíceps (bomba)", seriesReps: "3x21 (7+7+7)", detalhesExecucao: "Pegada largura dos ombros. 7 reps até meio + 7 do meio até topo + 7 completas. PUMP garantido! Pulsos alinhados.", errosComuns: ["Não dividir amplitude", "Dobrar pulsos"] },
+                            { nome: "Tríceps Supino Pegada Fechada", gruposMusculares: "Tríceps", seriesReps: "4x12", detalhesExecucao: "Deitado - seguro! Mãos separadas por 1 palmo. Foco em tríceps.", errosComuns: ["Abrir muito as mãos"] },
+                            { nome: "Rosca Alternada com Halteres", gruposMusculares: "Bíceps (pico)", seriesReps: "3x15 cada", detalhesExecucao: "Sentado. Alternar braços. Rotação completa da palma.", errosComuns: ["Movimentar cotovelo"] },
+                            { nome: "Tríceps Mergulho no Banco", gruposMusculares: "Tríceps", seriesReps: "3x12", detalhesExecucao: "Pés no chão ou elevados. Descer controlado. Halter no colo se quiser!", errosComuns: ["Descer rápido demais"] },
+                            { nome: "Elevação Lateral Sentado", gruposMusculares: "Ombro lateral", seriesReps: "3x20", detalhesExecucao: "Sentado - apoio total. Leve, controlado, alto volume. Ombros 3D!", errosComuns: ["Peso excessivo"] },
+                            { nome: "Elevação Posterior com Halteres", gruposMusculares: "Ombro posterior", seriesReps: "3x15", detalhesExecucao: "Sentado inclinado para frente. Abrir braços para trás.", errosComuns: ["Usar trapézio demais"] },
+                            { nome: "Prancha com Toque de Ombro", gruposMusculares: "Core + Estabilização", seriesReps: "3x10 cada", detalhesExecucao: "Prancha, tirar uma mão e tocar ombro oposto. Core ativo!", errosComuns: ["Rotacionar quadril"] },
+                            { nome: "Pallof Press (Polia)", gruposMusculares: "Core (anti-rotação)", seriesReps: "3x12 cada", detalhesExecucao: "Resistir rotação. ESSENCIAL para lombar!", errosComuns: ["Deixar rotacionar"] }
+                        ]
                     },
                     {
                         dia: "Sábado",
                         tipoTreino: "Força",
-                        descricaoGeral: "Full Body Circuito - Intensidade Moderada",
-                        avisoSaude: "Circuito sem exercícios de alto impacto. Descanso adequado.",
+                        descricaoGeral: "💪 Full Body Estético - Volume Moderado + Pump",
+                        avisoSaude: "✅ Treino completo com exercícios SEGUROS para fechar a semana!",
                         exercicios: [
-                            { nome: "Goblet Squat", gruposMusculares: "Pernas", seriesReps: "3x12", detalhesExecucao: "Halter na frente do peito.", errosComuns: ["Inclinar demais"] },
-                            { nome: "Supino com Halteres", gruposMusculares: "Peitoral", seriesReps: "3x12", detalhesExecucao: "Deitado no banco.", errosComuns: ["Arquear lombar"] },
-                            { nome: "Remada Apoiada", gruposMusculares: "Dorsais", seriesReps: "3x12", detalhesExecucao: "Peito apoiado no banco inclinado.", errosComuns: ["Levantar peito do banco"] },
-                            { nome: "Desenvolvimento Sentado", gruposMusculares: "Ombros", seriesReps: "3x12", detalhesExecucao: "Com apoio lombar.", errosComuns: ["Arquear costas"] },
-                            { nome: "Ponte de Glúteos", gruposMusculares: "Glúteos", seriesReps: "3x15", detalhesExecucao: "Peso no quadril.", errosComuns: ["Hiperextender"] },
-                            { nome: "Prancha", gruposMusculares: "Core", seriesReps: "3x30s", detalhesExecucao: "Finalizar com core.", errosComuns: ["Perder alinhamento"] }
+                            { nome: "Goblet Squat LENTO", gruposMusculares: "Pernas (tempo sob tensão)", seriesReps: "3x15", detalhesExecucao: "3s descida, 3s subida. Halter frontal. Queimação garantida!", errosComuns: ["Descer rápido"] },
+                            { nome: "Supino Inclinado com Halteres", gruposMusculares: "Peitoral superior", seriesReps: "3x15", detalhesExecucao: "Alto volume. Costas apoiadas. Definição do peitoral!", errosComuns: ["Tirar costas do banco"] },
+                            { nome: "Polia Alta Pegada Supinada", gruposMusculares: "Dorsais (espessura)", seriesReps: "3x15", detalhesExecucao: "Palmas para você. Puxar até peito. Costas grossas!", errosComuns: ["Inclinar demais para trás"] },
+                            { nome: "Elevação Lateral Composta", gruposMusculares: "Ombros (largura)", seriesReps: "3x12+8", detalhesExecucao: "12 normais + 8 parciais no topo. PUMP de ombro!", errosComuns: ["Peso demais nas parciais"] },
+                            { nome: "Ponte de Glúteos PESADA", gruposMusculares: "Glúteos (hipertrofia)", seriesReps: "3x20", detalhesExecucao: "Halter pesado no quadril. Pausa 3s espremendo! Glúteos de aço!", errosComuns: ["Não pausar", "Hiperextender"] },
+                            { nome: "Rosca Inversa com Barra Reta", gruposMusculares: "Antebraços, Braquial", seriesReps: "3x15", detalhesExecucao: "Pegada pronada (palmas para baixo), largura dos ombros. Antebraços grandes! Pulsos FIRMES e alinhados.", errosComuns: ["Soltar pulso", "Dobrar pulso"] },
+                            { nome: "Prancha RKC", gruposMusculares: "Core (intensidade máxima)", seriesReps: "3x20-30s", detalhesExecucao: "Contrair TUDO - glúteos, core, pernas. Intenso mas curto!", errosComuns: ["Não contrair máximo"] }
                         ],
                         circuitoMetabolic: {
-                            nome: "Finalizador (Opcional)",
-                            protocolo: "2 rounds - 20s cada, descanso livre",
-                            exercicios: ["Bike 1min intenso", "Prancha 30s"]
+                            nome: "🔥 Finalizador Opcional - Condicionamento",
+                            protocolo: "3 rounds - 30s trabalho / 30s descanso",
+                            exercicios: ["Bike Intenso", "Prancha", "Mountain Climbers Moderado"]
                         }
                     },
                     {
@@ -675,10 +831,19 @@
                     legacia: {}
                 };
                 ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'].forEach(dia => {
-                    treinosState.anna[dia] = { concluido: false, exercicios: {} };
-                    treinosState.legacia[dia] = { concluido: false, exercicios: {} };
+                    treinosState.anna[dia] = { concluido: false, exercicios: {}, cargas: {} };
+                    treinosState.legacia[dia] = { concluido: false, exercicios: {}, cargas: {} };
                 });
             }
+            
+            // Garantir que estados antigos tenham o campo cargas
+            ['anna', 'legacia'].forEach(profile => {
+                ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'].forEach(dia => {
+                    if (!treinosState[profile][dia].cargas) {
+                        treinosState[profile][dia].cargas = {};
+                    }
+                });
+            });
         }
         
         function saveState() {
@@ -859,12 +1024,42 @@
                         </div>
                     </div>
                 `;
+                
+                // Adicionar timer HIIT se for treino HIIT
+                if (treino.tipoTreino === 'HIIT') {
+                    html += `
+                        <div class="hiit-timer-container">
+                            <div class="timer-header">
+                                <h3>⏱️ Timer HIIT</h3>
+                                <div id="timer-phase" class="timer-phase">Pronto para Começar</div>
+                            </div>
+                            <div class="timer-display">
+                                <div id="timer-countdown" class="timer-countdown">00:00</div>
+                                <div id="timer-rounds" class="timer-rounds">Rodada: 0/0</div>
+                            </div>
+                            <div class="timer-progress-bar">
+                                <div id="timer-progress" class="timer-progress-fill" style="width: 0%"></div>
+                            </div>
+                            <div class="timer-controls">
+                                <button id="timer-start" class="timer-btn start" onclick="startTimer()">▶️ Iniciar</button>
+                                <button id="timer-pause" class="timer-btn pause" onclick="pauseTimer()" style="display: none;">⏸️ Pausar</button>
+                                <button id="timer-reset" class="timer-btn reset" onclick="resetTimer()">🔄 Reiniciar</button>
+                            </div>
+                            <div class="timer-info">
+                                O timer irá alternar automaticamente entre trabalho e descanso com sinal sonoro
+                            </div>
+                        </div>
+                    `;
+                }
             }
             
             if (treino.exercicios && treino.exercicios.length > 0) {
                 html += '<div class="exercise-list">';
                 treino.exercicios.forEach((ex, i) => {
                     const isCompleted = state.exercicios?.[i];
+                    const loadHistory = getLoadHistory(i);
+                    const progressIndicator = getProgressionIndicator(loadHistory);
+                    
                     html += `
                         <div id="exercise-${i}" class="exercise-item ${isCompleted ? 'completed' : ''}">
                             <div class="exercise-header">
@@ -888,6 +1083,35 @@
                                     <ul class="error-list">
                                         ${ex.errosComuns.map(err => `<li>${err}</li>`).join('')}
                                     </ul>
+                                </div>
+                                <div class="load-tracking">
+                                    <div class="load-tracking-header">
+                                        <div class="load-tracking-title">💪 Registro de Carga</div>
+                                        ${progressIndicator}
+                                    </div>
+                                    <div class="load-input-group">
+                                        <input 
+                                            type="text" 
+                                            id="load-input-${i}" 
+                                            class="load-input" 
+                                            placeholder="Ex: 20kg, 15kg, 12.5kg"
+                                            value="${loadHistory.length > 0 ? loadHistory[0].peso : ''}"
+                                        />
+                                        <button class="save-load-btn" onclick="saveLoad(${i})">
+                                            💾 Salvar
+                                        </button>
+                                    </div>
+                                    ${loadHistory.length > 0 ? `
+                                        <div class="load-history">
+                                            <div class="load-history-title">📊 Histórico (últimas 5 sessões)</div>
+                                            ${loadHistory.map((entry, idx) => `
+                                                <div class="load-entry">
+                                                    <span class="load-value">${entry.peso}</span>
+                                                    <span class="load-date">${formatDate(entry.data)}</span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    ` : ''}
                                 </div>
                             </div>
                         </div>
@@ -923,57 +1147,261 @@
             renderStats();
             renderDaySelector();
             renderWorkout();
+            initTimer(); // Inicializar timer se for HIIT
         }
+        
+        // ===== LOAD TRACKING =====
+        function saveLoad(exerciseIndex) {
+            const input = document.getElementById(`load-input-${exerciseIndex}`);
+            const peso = input.value.trim();
+            
+            if (!peso) {
+                alert('Por favor, digite o peso utilizado (ex: 20kg, 15kg)');
+                return;
+            }
+            
+            const state = treinosState[currentProfile][currentDay];
+            if (!state.cargas) state.cargas = {};
+            if (!state.cargas[exerciseIndex]) state.cargas[exerciseIndex] = [];
+            
+            // Adicionar nova entrada de carga
+            const entry = {
+                peso: peso,
+                data: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+                timestamp: Date.now()
+            };
+            
+            state.cargas[exerciseIndex].unshift(entry); // Adicionar no início
+            
+            // Manter apenas últimas 10 entradas
+            if (state.cargas[exerciseIndex].length > 10) {
+                state.cargas[exerciseIndex] = state.cargas[exerciseIndex].slice(0, 10);
+            }
+            
+            saveState();
+            renderWorkout();
+        }
+        
+        function getLoadHistory(exerciseIndex) {
+            const state = treinosState[currentProfile][currentDay];
+            if (!state.cargas || !state.cargas[exerciseIndex]) return [];
+            return state.cargas[exerciseIndex].slice(0, 5); // Últimas 5 entradas
+        }
+        
+        function getProgressionIndicator(history) {
+            if (history.length < 2) return '';
+            
+            // Comparar os dois últimos registros
+            const current = parseFloat(history[0].peso.replace(/[^0-9.]/g, ''));
+            const previous = parseFloat(history[1].peso.replace(/[^0-9.]/g, ''));
+            
+            if (isNaN(current) || isNaN(previous)) return '';
+            
+            if (current > previous) {
+                return '<div class="load-indicator up" title="Progrediu!">↗</div>';
+            } else if (current < previous) {
+                return '<div class="load-indicator down" title="Diminuiu">↘</div>';
+            } else {
+                return '<div class="load-indicator same" title="Manteve">→</div>';
+            }
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString + 'T00:00:00');
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            const dateOnly = date.toISOString().split('T')[0];
+            const todayOnly = today.toISOString().split('T')[0];
+            const yesterdayOnly = yesterday.toISOString().split('T')[0];
+            
+            if (dateOnly === todayOnly) return 'Hoje';
+            if (dateOnly === yesterdayOnly) return 'Ontem';
+            
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            return `${day}/${month}`;
+        }
+        // ===== END LOAD TRACKING =====
+        
+        // ===== HIIT TIMER =====
+        let timerInterval = null;
+        let timerState = {
+            isRunning: false,
+            currentPhase: 'work', // 'work' ou 'rest'
+            currentRound: 0,
+            totalRounds: 0,
+            workTime: 30,
+            restTime: 30,
+            timeRemaining: 30,
+            totalTime: 0,
+            elapsedTime: 0
+        };
+        
+        function initTimer() {
+            const treino = perfis[currentProfile].treinos.find(t => t.dia === currentDay);
+            if (!treino || treino.tipoTreino !== 'HIIT') return;
+            
+            // Extrair informações do protocolo
+            // Exemplos: "30s sprint / 30s caminhada - 20 rounds"
+            // "45s trabalho / 15s descanso - 3 rounds"
+            const instrucoes = treino.protocolo?.instrucoes || '';
+            
+            // Tentar extrair tempos e rodadas
+            const workMatch = instrucoes.match(/(\d+)s?\s*(sprint|trabalho)/i);
+            const restMatch = instrucoes.match(/(\d+)s?\s*(caminhada|descanso)/i);
+            const roundsMatch = instrucoes.match(/(\d+)\s*rounds?/i);
+            
+            if (workMatch) timerState.workTime = parseInt(workMatch[1]);
+            if (restMatch) timerState.restTime = parseInt(restMatch[1]);
+            if (roundsMatch) timerState.totalRounds = parseInt(roundsMatch[1]);
+            
+            // Se tiver exercícios listados, usar como rodadas
+            if (treino.protocolo?.exercicios && treino.protocolo.exercicios.length > 0) {
+                if (timerState.totalRounds === 0) {
+                    timerState.totalRounds = treino.protocolo.exercicios.length;
+                }
+            }
+            
+            // Fallback para valores padrão
+            if (timerState.totalRounds === 0) timerState.totalRounds = 10;
+            
+            timerState.timeRemaining = timerState.workTime;
+            timerState.currentRound = 1;
+            timerState.currentPhase = 'work';
+            timerState.totalTime = (timerState.workTime + timerState.restTime) * timerState.totalRounds;
+            timerState.elapsedTime = 0;
+            
+            updateTimerDisplay();
+        }
+        
+        function startTimer() {
+            if (timerState.isRunning) return;
+            
+            timerState.isRunning = true;
+            document.getElementById('timer-start').style.display = 'none';
+            document.getElementById('timer-pause').style.display = 'inline-block';
+            
+            timerInterval = setInterval(timerTick, 1000);
+        }
+        
+        function pauseTimer() {
+            timerState.isRunning = false;
+            document.getElementById('timer-start').style.display = 'inline-block';
+            document.getElementById('timer-pause').style.display = 'none';
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+        
+        function resetTimer() {
+            pauseTimer();
+            initTimer();
+        }
+        
+        function timerTick() {
+            timerState.timeRemaining--;
+            timerState.elapsedTime++;
+            
+            if (timerState.timeRemaining <= 0) {
+                // Trocar de fase
+                playBeep();
+                
+                if (timerState.currentPhase === 'work') {
+                    // Passou de trabalho para descanso
+                    timerState.currentPhase = 'rest';
+                    timerState.timeRemaining = timerState.restTime;
+                } else {
+                    // Passou de descanso para trabalho (nova rodada)
+                    timerState.currentRound++;
+                    
+                    if (timerState.currentRound > timerState.totalRounds) {
+                        // Timer concluído!
+                        playBeepComplete();
+                        pauseTimer();
+                        alert('🎉 HIIT Concluído! Parabéns! 💪');
+                        return;
+                    }
+                    
+                    timerState.currentPhase = 'work';
+                    timerState.timeRemaining = timerState.workTime;
+                }
+            }
+            
+            updateTimerDisplay();
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerState.timeRemaining / 60);
+            const seconds = timerState.timeRemaining % 60;
+            const timeStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            document.getElementById('timer-countdown').textContent = timeStr;
+            document.getElementById('timer-rounds').textContent = `Rodada: ${timerState.currentRound}/${timerState.totalRounds}`;
+            
+            // Atualizar fase
+            const phaseEl = document.getElementById('timer-phase');
+            if (timerState.currentPhase === 'work') {
+                phaseEl.textContent = '🔥 TRABALHO!';
+                phaseEl.className = 'timer-phase work';
+            } else {
+                phaseEl.textContent = '😮‍💨 Descanso';
+                phaseEl.className = 'timer-phase rest';
+            }
+            
+            // Atualizar barra de progresso
+            const progress = (timerState.elapsedTime / timerState.totalTime) * 100;
+            document.getElementById('timer-progress').style.width = `${Math.min(progress, 100)}%`;
+        }
+        
+        function playBeep() {
+            // Criar beep usando Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+        
+        function playBeepComplete() {
+            // Beep triplo para conclusão
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            [0, 0.15, 0.3].forEach(delay => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 1000;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + delay);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + delay + 0.2);
+                
+                oscillator.start(audioContext.currentTime + delay);
+                oscillator.stop(audioContext.currentTime + delay + 0.2);
+            });
+        }
+        // ===== FIM HIIT TIMER =====
         
         // Inicializar
         initState();
         renderAll();
-
-        let timerInterval;
-let secondsRemaining = 0;
-
-function toggleTimerUI() {
-    const ui = document.getElementById('timer-ui');
-    ui.style.display = ui.style.display === 'none' || ui.style.display === '' ? 'block' : 'none';
-}
-
-function updateDisplay() {
-    const mins = Math.floor(secondsRemaining / 60);
-    const secs = secondsRemaining % 60;
-    document.getElementById('timer-display').textContent = 
-        `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-}
-
-function setTimer(secs) {
-    pauseTimer();
-    secondsRemaining = secs;
-    updateDisplay();
-}
-
-function startTimer() {
-    if (timerInterval) return;
-    if (secondsRemaining <= 0) return;
-    
-    timerInterval = setInterval(() => {
-        secondsRemaining--;
-        updateDisplay();
-        if (secondsRemaining <= 0) {
-            pauseTimer();
-            alert("Tempo finalizado!");
-        }
-    }, 1000);
-}
-
-function pauseTimer() {
-    clearInterval(timerInterval);
-    timerInterval = null;
-}
-
-function resetTimer() {
-    pauseTimer();
-    secondsRemaining = 0;
-    updateDisplay();
-}
     </script>
 </body>
 </html>
