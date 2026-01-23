@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Treinos - Anna & Legacia</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+        .header {
+            background: linear-gradient(135deg, #059669 0%, #0891b2 100%);
+            padding: 1.5rem;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 { font-size: 1.5rem; font-weight: 700; }
+        .header p { color: #d1fae5; font-size: 0.875rem; margin-top: 0.25rem; }
+        .container { max-width: 900px; margin: 0 auto; padding: 1rem; }
+        
+        /* Tabs */
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .tab {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 0.5rem;
+            color: #94a3b8;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            background: #059669;
+            border-color: #059669;
+            color: white;
+        }
+        .tab:hover:not(.active) { border-color: #0891b2; }
+        
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .stat-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        .stat-value { font-size: 1.5rem; font-weight: 700; color: #10b981; }
+        .stat-label { font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem; }
+        .progress-bar {
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #059669, #0891b2);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        
+        /* Profile Info */
+        .profile-info {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        .profile-stat { }
+        .profile-stat span { display: block; }
+        .profile-stat .label { font-size: 0.75rem; color: #94a3b8; }
+        .profile-stat .value { font-size: 1.125rem; font-weight: 600; color: #10b981; }
+        .health-warning {
+            background: #451a03;
+            border: 1px solid #f59e0b;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            color: #fcd34d;
+            font-size: 0.875rem;
+        }
+        
+        /* Day selector */
+        .day-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        .day-btn {
+            min-width: 80px;
+            padding: 0.75rem 1rem;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 0.5rem;
+            color: #94a3b8;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .day-btn.active {
+            background: #0d9488;
+            border-color: #0d9488;
+            color: white;
+        }
+        .day-btn.completed {
+            border-color: #059669;
+        }
+        .day-btn .day-name { font-weight: 600; font-size: 0.875rem; }
+        .day-btn .day-type { font-size: 0.625rem; margin-top: 0.25rem; opacity: 0.8; }
+        .day-btn .check { color: #10b981; margin-top: 0.25rem; }
+        
+        /* Workout Card */
+        .workout-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        .workout-header {
+            padding: 1rem;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .workout-title { font-weight: 600; font-size: 1.125rem; }
+        .workout-badge {
+            background: #0d9488;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .workout-desc {
+            padding: 1rem;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            border-bottom: 1px solid #334155;
+        }
+        
+        /* Exercise List */
+        .exercise-list { padding: 0.5rem; }
+        .exercise-item {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        .exercise-item.completed {
+            background: #064e3b;
+            border-color: #059669;
+        }
+        .exercise-header {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+        }
+        .exercise-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #475569;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .exercise-checkbox.checked {
+            background: #059669;
+            border-color: #059669;
+        }
+        .exercise-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+        }
+        .exercise-name {
+            flex: 1;
+            font-weight: 500;
+        }
+        .exercise-item.completed .exercise-name {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        .exercise-reps {
+            background: #334155;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+        .exercise-toggle {
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+        .exercise-details {
+            display: none;
+            padding: 0 1rem 1rem;
+            border-top: 1px solid #334155;
+        }
+        .exercise-item.expanded .exercise-details {
+            display: block;
+        }
+        .detail-section {
+            margin-top: 0.75rem;
+        }
+        .detail-title {
+            font-size: 0.75rem;
+            color: #10b981;
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+        .detail-text {
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+        .error-list {
+            list-style: none;
+            padding: 0;
+        }
+        .error-list li {
+            font-size: 0.875rem;
+            color: #f87171;
+            padding-left: 1rem;
+            position: relative;
+            margin-bottom: 0.25rem;
+        }
+        .error-list li::before {
+            content: '⚠';
+            position: absolute;
+            left: 0;
+        }
+        
+        /* Load Tracking */
+        .load-tracking {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-top: 0.75rem;
+        }
+        .load-tracking-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .load-tracking-title {
+            font-size: 0.75rem;
+            color: #10b981;
+            font-weight: 600;
+        }
+        .load-input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .load-input {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+        }
+        .load-input:focus {
+            outline: none;
+            border-color: #10b981;
+        }
+        .load-input::placeholder {
+            color: #475569;
+        }
+        .save-load-btn {
+            background: #059669;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .save-load-btn:hover {
+            background: #047857;
+        }
+        .load-history {
+            margin-top: 0.75rem;
+        }
+        .load-history-title {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+        .load-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.375rem 0.5rem;
+            background: #0f172a;
+            border-radius: 0.25rem;
+            margin-bottom: 0.25rem;
+            font-size: 0.813rem;
+        }
+        .load-value {
+            color: #10b981;
+            font-weight: 600;
+        }
+        .load-date {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+        .load-indicator {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.75rem;
+        }
+        .load-indicator.up {
+            background: #064e3b;
+            color: #10b981;
+        }
+        .load-indicator.same {
+            background: #422006;
+            color: #fbbf24;
+        }
+        .load-indicator.down {
+            background: #450a0a;
+            color: #f87171;
+        }
+        
+        /* Protocol Card */
+        .protocol-card {
+            background: #422006;
+            border: 1px solid #f59e0b;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 0.5rem;
+        }
+        .protocol-title {
+            color: #fcd34d;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .protocol-text {
+            color: #fef3c7;
+            font-size: 0.875rem;
+        }
+        
+        /* Complete Day Button */
+        .complete-day-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #059669 0%, #0891b2 100%);
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .complete-day-btn:hover {
+            transform: translateY(-2px);
+        }
+        .complete-day-btn.completed {
+            background: #059669;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #475569;
+            font-size: 0.875rem;
+        }
+        
+        /* Rest Day */
+        .rest-day {
+            text-align: center;
+            padding: 3rem;
+        }
+        .rest-emoji { font-size: 4rem; margin-bottom: 1rem; }
+        .rest-title { font-size: 1.5rem; font-weight: 700; color: #10b981; }
+        .rest-text { color: #94a3b8; margin-top: 0.5rem; }
+        
+        /* HIIT Timer */
+        .hiit-timer-container {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            border: 2px solid #6366f1;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 1rem 0.5rem;
+        }
+        .timer-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .timer-header h3 {
+            color: #a5b4fc;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .timer-phase {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #4f46e5;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        .timer-phase.work {
+            background: #ef4444;
+            animation: pulse-work 1s infinite;
+        }
+        .timer-phase.rest {
+            background: #10b981;
+        }
+        @keyframes pulse-work {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .timer-display {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        .timer-countdown {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fbbf24;
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+            font-variant-numeric: tabular-nums;
+        }
+        .timer-rounds {
+            color: #a5b4fc;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+        .timer-progress-bar {
+            height: 8px;
+            background: #312e81;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        .timer-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #fbbf24);
+            transition: width 0.1s linear;
+        }
+        .timer-controls {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        .timer-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        .timer-btn.start {
+            background: #10b981;
+            color: white;
+        }
+        .timer-btn.start:hover {
+            background: #059669;
+        }
+        .timer-btn.pause {
+            background: #f59e0b;
+            color: white;
+        }
+        .timer-btn.pause:hover {
+            background: #d97706;
+        }
+        .timer-btn.reset {
+            background: #6b7280;
+            color: white;
+        }
+        .timer-btn.reset:hover {
+            background: #4b5563;
+        }
+        .timer-info {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #312e81;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🏋️ Dashboard de Treinos</h1>
+        <p>Semana de Treinos Personalizados</p>
+    </header>
+    
+    <div class="container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchProfile('anna')">👩 Anna</div>
+            <div class="tab" onclick="switchProfile('legacia')">👨 Legacia</div>
+        </div>
+        
+        <!-- Profile Info -->
+        <div id="profile-info" class="profile-info"></div>
+        
+        <!-- Health Warning (for Legacia) -->
+        <div id="health-warning" class="health-warning" style="display: none;"></div>
+        
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="treinos-count">0/7</div>
+                <div class="stat-label">Treinos da Semana</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="treinos-progress" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="exercicios-count">0/0</div>
+                <div class="stat-label">Exercícios Feitos</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="exercicios-progress" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="status-text">🚀</div>
+                <div class="stat-label" id="status-label">Vamos lá!</div>
+            </div>
+        </div>
+        
+        <!-- Day Selector -->
+        <div class="day-selector" id="day-selector"></div>
+        
+        <!-- Workout Content -->
+        <div id="workout-content"></div>
+        
+        <footer class="footer">
+            Dashboard de Treinos • Feito com 💚 para Anna e Legacia
+        </footer>
+    </div>
+
+    <script>
+        // Data Version para forçar reset se necessário
+        const DATA_VERSION = 4;
+        
+        // Dados dos perfis
+        const perfis = {
+            anna: {
+                nome: "Anna",
+                altura: "1,49m",
+                peso: "56,4kg",
+                observacoes: null,
+                treinos: [
+                    {
+                        dia: "Segunda",
+                        tipoTreino: "Força",
+                        descricaoGeral: "🍑 Lower Body - FOCO em Glúteos, Quadríceps e Posterior",
+                        exercicios: [
+                            { nome: "Agachamento com Barra", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "4x10-12", detalhesExecucao: "Usar o suporte de supino para a barra. Descer ATÉ PARALELO para máxima ativação de glúteos.", errosComuns: ["Joelhos colapsando para dentro", "Não descer o suficiente"] },
+                            { nome: "Hip Thrust com Barra 🍑", gruposMusculares: "Glúteos (foco principal)", seriesReps: "4x12-15", detalhesExecucao: "Apoiar escápulas no banco, barra sobre quadril. Empurrar com os GLÚTEOS, pausa de 2s no topo espremendo!", errosComuns: ["Hiperextender lombar", "Usar quadríceps demais", "Não pausar no topo"] },
+                            { nome: "Cadeira Extensora (Multi Speedo)", gruposMusculares: "Quadríceps", seriesReps: "3x15", detalhesExecucao: "Extensão completa no topo, segurando 1 segundo. Foco na queimação!", errosComuns: ["Movimento muito rápido", "Não completar extensão"] },
+                            { nome: "Stiff com Barra", gruposMusculares: "Posterior, Glúteos", seriesReps: "4x12", detalhesExecucao: "Barra descendo PRÓXIMA às pernas. Sentir alongar posterior e glúteos. Apertar glúteos no topo!", errosComuns: ["Arredondar a lombar", "Dobrar demais os joelhos", "Não espremer glúteos"] },
+                            { nome: "Abdução de Quadril na Multi Speedo 🍑", gruposMusculares: "Glúteo Médio (lateral)", seriesReps: "3x20 cada", detalhesExecucao: "Abrir perna contra resistência. Controlar na volta. ESSENCIAL para quadril feminino!", errosComuns: ["Movimento muito rápido", "Usar impulso"] },
+                            { nome: "Afundo Estacionário com Halteres", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "3x12 cada", detalhesExecucao: "Passada LONGA para enfatizar glúteos. Descer controlado.", errosComuns: ["Passada curta", "Joelho passando do pé"] },
+                            { nome: "Panturrilha em Pé (Step com Halter)", gruposMusculares: "Panturrilhas", seriesReps: "4x20", detalhesExecucao: "Amplitude COMPLETA. Pausa 1s no topo.", errosComuns: ["Movimento parcial", "Velocidade excessiva"] }
+                        ]
+                    },
+                    {
+                        dia: "Terça",
+                        tipoTreino: "HIIT",
+                        descricaoGeral: "Cardio de alta intensidade - 25 minutos",
+                        protocolo: {
+                            duracao: "25 minutos",
+                            tipo: "Intervalado na Esteira Speedo",
+                            instrucoes: "30s sprint / 30s caminhada - 20 rounds + 5min aquecimento + 5min volta calma",
+                            sugestao: "Ajustar velocidade conforme condicionamento"
+                        },
+                        exercicios: []
+                    },
+                    {
+                        dia: "Quarta",
+                        tipoTreino: "Força",
+                        descricaoGeral: "💪 Upper Body - FOCO em Costas Largas e Braços Definidos",
+                        exercicios: [
+                            { nome: "Polia Alta Pegada Aberta (Multi Speedo)", gruposMusculares: "Dorsais (largura)", seriesReps: "4x12", detalhesExecucao: "Puxar até linha dos mamilos. Retrair escápulas! Pegada larga para costas em V.", errosComuns: ["Usar muito braço", "Não retrair escápulas", "Balançar corpo"] },
+                            { nome: "Remada Curvada com Barra", gruposMusculares: "Dorsais (espessura), Trapézio", seriesReps: "4x10", detalhesExecucao: "45° de inclinação. Puxar até ABDÔMEN. Espremer escápulas!", errosComuns: ["Subir o tronco", "Não levar até o abdômen"] },
+                            { nome: "Remada Unilateral com Halter", gruposMusculares: "Dorsais, Lombar", seriesReps: "3x12 cada", detalhesExecucao: "Apoiar no banco. Puxar halter até o quadril. Amplitude MÁXIMA!", errosComuns: ["Rotacionar tronco", "Usar muito bíceps"] },
+                            { nome: "Pullover com Halter (banco)", gruposMusculares: "Dorsais, Peitoral, Serrátil", seriesReps: "3x15", detalhesExecucao: "Halter atrás da cabeça, subir em arco. ÓTIMO para costas e caixa torácica!", errosComuns: ["Dobrar muito cotovelos", "Não alongar"] },
+                            { nome: "Supino Reto com Barra", gruposMusculares: "Peitoral, Tríceps", seriesReps: "4x10", detalhesExecucao: "Barra até o peito, cotovelos a 45°.", errosComuns: ["Cotovelos muito abertos", "Tirar glúteo"] },
+                            { nome: "Rosca Direta com Barra Reta", gruposMusculares: "Bíceps", seriesReps: "4x12", detalhesExecucao: "Pegada na largura dos ombros. Cotovelos FIXOS. Subir controlado, descer LENTO (3s). Pulsos alinhados.", errosComuns: ["Balançar corpo", "Descer rápido demais", "Dobrar pulsos"] },
+                            { nome: "Rosca Martelo com Halteres", gruposMusculares: "Bíceps, Braquial, Antebraços", seriesReps: "3x15", detalhesExecucao: "Pegada neutra (palmas frente a frente). Cotovelos colados. Braço grosso!", errosComuns: ["Cotovelos abrindo", "Usar impulso"] },
+                            { nome: "Tríceps Testa com Halteres", gruposMusculares: "Tríceps (cabeça longa)", seriesReps: "4x12", detalhesExecucao: "Deitada no banco. Halteres até testa, cotovelos FIXOS apontando pro teto. Palmas frente a frente (neutro).", errosComuns: ["Cotovelos abrindo", "Descer na cabeça", "Abrir os halteres"] },
+                            { nome: "Tríceps Polia com Barra (Multi Speedo)", gruposMusculares: "Tríceps (definição)", seriesReps: "3x15", detalhesExecucao: "Empurrar barra para baixo até extensão completa. Espremer tríceps no final!", errosComuns: ["Cotovelos saindo do lugar", "Movimento parcial", "Usar corpo"] },
+                            { nome: "Prancha Frontal", gruposMusculares: "Core", seriesReps: "3x60s", detalhesExecucao: "Corpo reto como tábua. Abdômen contraído!", errosComuns: ["Quadril subindo/caindo"] }
+                        ]
+                    },
+                    {
+                        dia: "Quinta",
+                        tipoTreino: "LISS",
+                        descricaoGeral: "Cardio de baixa intensidade - 40 minutos",
+                        protocolo: {
+                            duracao: "40 minutos",
+                            tipo: "Esteira ou Bike Ergométrica",
+                            instrucoes: "Manter frequência cardíaca em zona de queima (120-140 bpm)",
+                            sugestao: "Pode alternar 20min esteira + 20min bike"
+                        },
+                        exercicios: []
+                    },
+                    {
+                        dia: "Sexta",
+                        tipoTreino: "Força",
+                        descricaoGeral: "🍑 Lower Body - GLÚTEOS e Posterior Intenso + Finalizador",
+                        exercicios: [
+                            { nome: "Agachamento Sumô com Halter", gruposMusculares: "Glúteos, Adutores, Quadríceps", seriesReps: "4x15", detalhesExecucao: "Pés LARGOS (mais que ombros), pontas abertas 45°. Descer entre as pernas. ÓTIMO para glúteos!", errosComuns: ["Pés muito juntos", "Joelhos colapsando"] },
+                            { nome: "Afundo Caminhando com Halteres 🍑", gruposMusculares: "Glúteos, Quadríceps", seriesReps: "4x12 cada", detalhesExecucao: "Caminhar dando passadas LONGAS. Joelho traseiro quase toca o chão. EXCELENTE para glúteos! Tortura garantida!", errosComuns: ["Passada curta", "Tronco caindo para frente", "Não descer o suficiente"] },
+                            { nome: "Stiff Unilateral com Halter", gruposMusculares: "Posterior, Glúteos, Equilíbrio", seriesReps: "3x12 cada", detalhesExecucao: "Uma perna só! Descer halter na frente, perna livre vai atrás. Conexão mente-músculo!", errosComuns: ["Perder equilíbrio", "Arredondar lombar"] },
+                            { nome: "Cadeira Extensora DROP SET (Multi Speedo)", gruposMusculares: "Quadríceps (definição)", seriesReps: "3x12+8+6", detalhesExecucao: "12 reps, reduz peso SEM descanso, +8 reps, reduz de novo, +6 reps. QUEIMAÇÃO!", errosComuns: ["Descansar entre drops"] },
+                            { nome: "Elevação Pélvica Unilateral", gruposMusculares: "Glúteos (isolamento máximo)", seriesReps: "3x15 cada", detalhesExecucao: "Uma perna! Outra estendida no ar. Apertar glúteo no topo 2 segundos!", errosComuns: ["Não pausar no topo", "Hiperextender lombar"] },
+                            { nome: "Coice de Glúteo no Espaldar 🍑", gruposMusculares: "Glúteos", seriesReps: "3x20 cada", detalhesExecucao: "De 4 apoios, chutar perna para trás e cima com caneleira. Espremer glúteo!", errosComuns: ["Arquear lombar", "Usar impulso"] },
+                            { nome: "Panturrilha Sentado (Multi ou com halter)", gruposMusculares: "Panturrilhas (sóleo)", seriesReps: "4x25", detalhesExecucao: "Sentada, halter sobre joelhos. Subir na ponta dos pés. Alto volume!", errosComuns: ["Amplitude parcial"] }
+                        ],
+                        circuitoMetabolic: {
+                            nome: "🔥 Circuito Queima-Gordura",
+                            protocolo: "4 rounds - 40s trabalho / 20s descanso por exercício",
+                            exercicios: ["Burpees", "Mountain Climbers", "Agachamento com Salto", "Prancha com Joelho ao Cotovelo", "Jumping Jacks"]
+                        }
+                    },
+                    {
+                        dia: "Sábado",
+                        tipoTreino: "HIIT",
+                        descricaoGeral: "HIIT Funcional - 30 minutos",
+                        protocolo: {
+                            duracao: "30 minutos",
+                            tipo: "Circuito Funcional",
+                            instrucoes: "45s trabalho / 15s descanso - 3 rounds completos",
+                            exercicios: ["Box Jump (step)", "Kettlebell Swing (halter)", "TRX Row", "Burpees", "Saco de Pancada", "Prancha com Toque de Ombro"]
+                        },
+                        exercicios: []
+                    },
+                    {
+                        dia: "Domingo",
+                        tipoTreino: "Descanso",
+                        descricaoGeral: "Recuperação ativa - alongamento leve ou caminhada",
+                        exercicios: []
+                    }
+                ]
+            },
+            legacia: {
+                nome: "Legacia",
+                altura: "1,92m",
+                peso: "75kg",
+                observacoes: "⚠️ Hérnia de disco e Espondilolistese - Todos exercícios adaptados para proteção da coluna",
+                treinos: [
+                    {
+                        dia: "Segunda",
+                        tipoTreino: "Força",
+                        descricaoGeral: "💪 Inferiores - Hipertrofia Segura + Proteção da Coluna",
+                        avisoSaude: "✅ Exercícios escolhidos para crescimento muscular SEM comprometer sua coluna!",
+                        exercicios: [
+                            { nome: "Goblet Squat com Halter", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "4x12-15", detalhesExecucao: "Halter FRONTAL protege coluna. Descer PROFUNDO para ativar glúteos. Pausa 1s embaixo!", errosComuns: ["Não descer o suficiente", "Joelhos colapsando"] },
+                            { nome: "Cadeira Extensora SUPER SÉRIE (Multi Speedo)", gruposMusculares: "Quadríceps (definição)", seriesReps: "4x15+10", detalhesExecucao: "15 reps normais + 10 parciais no topo. SEM CARGA AXIAL - perfeito para você!", errosComuns: ["Movimento explosivo"] },
+                            { nome: "Ponte de Glúteos com Halter PESADO 🍑", gruposMusculares: "Glúteos (hipertrofia)", seriesReps: "4x15", detalhesExecucao: "Deitado - ZERO risco! Halter sobre quadril. Pausa 2s no topo espremendo glúteos!", errosComuns: ["Não pausar no topo", "Hiperextender lombar"] },
+                            { nome: "Abdução de Quadril com Elástico (em pé)", gruposMusculares: "Glúteo médio (estabilidade + estética)", seriesReps: "4x20 cada", detalhesExecucao: "Elástico no tornozelo. Abrir perna lateralmente. ESSENCIAL para sua lombar!", errosComuns: ["Inclinar tronco"] },
+                            { nome: "Step-Up com Halteres", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "3x15 cada", detalhesExecucao: "Step alto para mais glúteo. Subir controlado, força do calcanhar.", errosComuns: ["Usar impulso da perna de trás"] },
+                            { nome: "Stiff Leve com Halteres (amplitude reduzida)", gruposMusculares: "Posterior (alongamento seguro)", seriesReps: "3x15", detalhesExecucao: "Apenas até canela. Foco: conexão mente-músculo. LOMBAR NEUTRA!", errosComuns: ["Descer demais", "Peso excessivo"] },
+                            { nome: "Afundo Estático com Halteres", gruposMusculares: "Quadríceps, Glúteos", seriesReps: "3x12 cada", detalhesExecucao: "Posição fixa (sem caminhar). Passada longa. Tempo sob tensão!", errosComuns: ["Passada curta"] },
+                            { nome: "Panturrilha Sentado com Halter", gruposMusculares: "Panturrilhas (sóleo)", seriesReps: "4x25", detalhesExecucao: "Sentado - ZERO compressão. Halter sobre joelhos. Alto volume!", errosComuns: ["Amplitude parcial"] }
+                        ]
+                    },
+                    {
+                        dia: "Terça",
+                        tipoTreino: "Força",
+                        descricaoGeral: "💪 Superiores - HIPERTROFIA de Peito, Ombros e Tríceps",
+                        avisoSaude: "✅ Todos exercícios deitado ou sentado COM APOIO - sua coluna está protegida!",
+                        exercicios: [
+                            { nome: "Supino Reto com Barra", gruposMusculares: "Peitoral (massa)", seriesReps: "4x8-10", detalhesExecucao: "Deitado - ZERO compressão! Barra até peito. Lombar levemente arqueada (natural).", errosComuns: ["Arquear MUITO", "Tirar glúteo"] },
+                            { nome: "Supino Inclinado com Halteres", gruposMusculares: "Peitoral superior (estética)", seriesReps: "4x12", detalhesExecucao: "30-45°. COSTAS COLADAS no banco. Descer até sentir alongar.", errosComuns: ["Tirar costas do banco"] },
+                            { nome: "Peck Deck (Multi Speedo)", gruposMusculares: "Peitoral (isolamento)", seriesReps: "3x15", detalhesExecucao: "Sentado, apoio total. Espremer peito no centro. Tempo sob tensão!", errosComuns: ["Movimento explosivo"] },
+                            { nome: "Desenvolvimento Sentado com Halteres", gruposMusculares: "Ombros (volume)", seriesReps: "4x12", detalhesExecucao: "Banco VERTICAL com apoio lombar. Subir controlado, pausa no topo.", errosComuns: ["Arquear lombar", "Descer rápido"] },
+                            { nome: "Elevação Lateral com Halteres", gruposMusculares: "Ombro lateral (largura)", seriesReps: "4x15", detalhesExecucao: "Pode fazer sentado. Pausa 1s no topo. Peso moderado, controle!", errosComuns: ["Peso excessivo", "Subir com impulso"] },
+                            { nome: "Elevação Frontal com Halter", gruposMusculares: "Ombro anterior", seriesReps: "3x12", detalhesExecucao: "Sentado ou em pé. Subir até altura dos olhos.", errosComuns: ["Subir demais", "Balançar corpo"] },
+                            { nome: "Tríceps Testa com Halteres", gruposMusculares: "Tríceps (cabeça longa)", seriesReps: "4x12", detalhesExecucao: "Deitado - perfeito para coluna! Halteres até testa, cotovelos fixos apontando pro teto. Pegada neutra (palmas frente a frente).", errosComuns: ["Cotovelos abrindo", "Abrir os halteres"] },
+                            { nome: "Tríceps Polia com Barra (Multi Speedo)", gruposMusculares: "Tríceps (definição)", seriesReps: "3x15", detalhesExecucao: "Empurrar barra para baixo até extensão completa. Espremer tríceps! Joelhos levemente flexionados.", errosComuns: ["Curvar tronco", "Cotovelos saindo", "Movimento parcial"] },
+                            { nome: "Tríceps Kickback com Halteres", gruposMusculares: "Tríceps (isolamento)", seriesReps: "3x15 cada", detalhesExecucao: "Apoiar mão e joelho no banco. Cotovelo fixo, estender apenas antebraço.", errosComuns: ["Movimentar cotovelo"] }
+                        ]
+                    },
+                    {
+                        dia: "Quarta",
+                        tipoTreino: "Core",
+                        descricaoGeral: "Core e Estabilização - DIA MAIS IMPORTANTE 🔴",
+                        avisoSaude: "🔴 DIA ESSENCIAL - O core forte protege sua coluna. Nunca pule este treino!",
+                        exercicios: [
+                            { nome: "Dead Bug", gruposMusculares: "Core profundo, Transverso", seriesReps: "3x10 cada lado", detalhesExecucao: "Lombar SEMPRE colada no chão. Estender braço e perna opostos.", errosComuns: ["Lombar descolando do chão", "Movimento muito rápido"] },
+                            { nome: "Bird Dog", gruposMusculares: "Core, Estabilizadores", seriesReps: "3x10 cada lado", detalhesExecucao: "4 apoios, estender braço e perna opostos. Manter coluna NEUTRA.", errosComuns: ["Arquear ou arredondar lombar"] },
+                            { nome: "Prancha Frontal", gruposMusculares: "Core completo", seriesReps: "3x30-45s", detalhesExecucao: "Cotovelos sob ombros. Corpo em linha RETA.", errosComuns: ["Quadril subindo ou descendo"] },
+                            { nome: "Prancha Lateral", gruposMusculares: "Oblíquos", seriesReps: "3x20-30s cada", detalhesExecucao: "Corpo alinhado. Quadril não pode cair.", errosComuns: ["Quadril caindo", "Rotacionar tronco"] },
+                            { nome: "Pallof Press (Multi Speedo)", gruposMusculares: "Anti-rotação", seriesReps: "3x12 cada lado", detalhesExecucao: "Usar polia. Resistir à rotação do tronco.", errosComuns: ["Deixar tronco rotacionar"] },
+                            { nome: "Ponte de Glúteos Isométrica", gruposMusculares: "Glúteos, Estabilização lombar", seriesReps: "3x30s", detalhesExecucao: "Manter quadril elevado, espremendo glúteos.", errosComuns: ["Hiperextender lombar"] },
+                            { nome: "TRX - Prancha com Pés Suspensos", gruposMusculares: "Core completo", seriesReps: "3x20-30s", detalhesExecucao: "Pés nas alças do TRX. Manter corpo estável.", errosComuns: ["Balançar demais", "Quadril subindo"] },
+                            { nome: "Mobilidade: Cat-Cow", gruposMusculares: "Mobilidade espinhal", seriesReps: "2x10", detalhesExecucao: "Movimento suave de flexão/extensão da coluna.", errosComuns: ["Movimento brusco"] },
+                            { nome: "Mobilidade: Rotação Torácica", gruposMusculares: "Coluna torácica", seriesReps: "2x10 cada lado", detalhesExecucao: "4 apoios, mão na nuca, rotacionar tronco.", errosComuns: ["Forçar amplitude"] }
+                        ]
+                    },
+                    {
+                        dia: "Quinta",
+                        tipoTreino: "Força",
+                        descricaoGeral: "💪 Superiores - COSTAS EM V + Bíceps Volumosos",
+                        avisoSaude: "✅ Exercícios com apoio ou sentado - ZERO stress na coluna!",
+                        exercicios: [
+                            { nome: "Polia Alta Pegada Aberta (Multi Speedo)", gruposMusculares: "Dorsais (largura - V)", seriesReps: "4x12", detalhesExecucao: "Pegada LARGA. Puxar até linha dos mamilos. Peito para frente. Costas largas!", errosComuns: ["Puxar atrás da cabeça", "Inclinar demais"] },
+                            { nome: "Remada Baixa Pegada Fechada (Multi Speedo)", gruposMusculares: "Dorsais (espessura)", seriesReps: "4x12", detalhesExecucao: "Sentado - apoio total. Puxar até abdômen. Espremer escápulas!", errosComuns: ["Puxar com lombar", "Não retrair escápulas"] },
+                            { nome: "Remada Unilateral com Halter (apoiado)", gruposMusculares: "Dorsais (simetria)", seriesReps: "4x12 cada", detalhesExecucao: "Mão e joelho no banco. Coluna RETA. Puxar até quadril. Amplitude máxima!", errosComuns: ["Rotacionar tronco", "Usar bíceps demais"] },
+                            { nome: "Pullover com Halter", gruposMusculares: "Dorsais, Serrátil, Peitoral", seriesReps: "3x15", detalhesExecucao: "Deitado - ZERO compressão! Halter atrás da cabeça em arco. Caixa torácica!", errosComuns: ["Dobrar muito cotovelos"] },
+                            { nome: "Elevação Posterior Inclinado com Halteres", gruposMusculares: "Ombro posterior, Trapézio", seriesReps: "4x20", detalhesExecucao: "Sentado inclinado 45° no banco. Abrir braços para trás lateralmente. ESSENCIAL para postura e ombros 3D!", errosComuns: ["Peso excessivo", "Usar trapézio demais", "Não inclinar suficiente"] },
+                            { nome: "Encolhimento com Halteres", gruposMusculares: "Trapézio superior", seriesReps: "3x15", detalhesExecucao: "Pode fazer sentado. Subir ombros, pausa 2s no topo. Trapézio poderoso!", errosComuns: ["Rotacionar ombros"] },
+                            { nome: "Rosca Direta com Barra Reta", gruposMusculares: "Bíceps", seriesReps: "4x12", detalhesExecucao: "Sentado com costas apoiadas. Pegada largura dos ombros. Cotovelos FIXOS. Descer LENTO (3s). Pulsos alinhados.", errosComuns: ["Balançar corpo", "Dobrar pulsos"] },
+                            { nome: "Rosca Martelo com Halteres", gruposMusculares: "Bíceps, Braquial, Antebraços", seriesReps: "4x15", detalhesExecucao: "Sentado. Palmas frente a frente. Braços grossos!", errosComuns: ["Usar impulso"] },
+                            { nome: "Rosca Concentrada com Halter", gruposMusculares: "Bíceps (pico)", seriesReps: "3x12 cada", detalhesExecucao: "Sentado, cotovelo apoiado na coxa. Foco total no bíceps!", errosComuns: ["Usar corpo para ajudar"] }
+                        ]
+                    },
+                    {
+                        dia: "Sexta",
+                        tipoTreino: "Força",
+                        descricaoGeral: "💪 Pump Day - Braços + Ombros + Core",
+                        avisoSaude: "✅ Dia de volume alto com exercícios SEGUROS - finalizador da semana!",
+                        exercicios: [
+                            { nome: "Rosca 21 com Barra Reta", gruposMusculares: "Bíceps (bomba)", seriesReps: "3x21 (7+7+7)", detalhesExecucao: "Pegada largura dos ombros. 7 reps até meio + 7 do meio até topo + 7 completas. PUMP garantido! Pulsos alinhados.", errosComuns: ["Não dividir amplitude", "Dobrar pulsos"] },
+                            { nome: "Tríceps Supino Pegada Fechada", gruposMusculares: "Tríceps", seriesReps: "4x12", detalhesExecucao: "Deitado - seguro! Mãos separadas por 1 palmo. Foco em tríceps.", errosComuns: ["Abrir muito as mãos"] },
+                            { nome: "Rosca Alternada com Halteres", gruposMusculares: "Bíceps (pico)", seriesReps: "3x15 cada", detalhesExecucao: "Sentado. Alternar braços. Rotação completa da palma.", errosComuns: ["Movimentar cotovelo"] },
+                            { nome: "Tríceps Mergulho no Banco", gruposMusculares: "Tríceps", seriesReps: "3x12", detalhesExecucao: "Pés no chão ou elevados. Descer controlado. Halter no colo se quiser!", errosComuns: ["Descer rápido demais"] },
+                            { nome: "Elevação Lateral Sentado", gruposMusculares: "Ombro lateral", seriesReps: "3x20", detalhesExecucao: "Sentado - apoio total. Leve, controlado, alto volume. Ombros 3D!", errosComuns: ["Peso excessivo"] },
+                            { nome: "Elevação Posterior com Halteres", gruposMusculares: "Ombro posterior", seriesReps: "3x15", detalhesExecucao: "Sentado inclinado para frente. Abrir braços para trás.", errosComuns: ["Usar trapézio demais"] },
+                            { nome: "Prancha com Toque de Ombro", gruposMusculares: "Core + Estabilização", seriesReps: "3x10 cada", detalhesExecucao: "Prancha, tirar uma mão e tocar ombro oposto. Core ativo!", errosComuns: ["Rotacionar quadril"] },
+                            { nome: "Pallof Press (Polia)", gruposMusculares: "Core (anti-rotação)", seriesReps: "3x12 cada", detalhesExecucao: "Resistir rotação. ESSENCIAL para lombar!", errosComuns: ["Deixar rotacionar"] }
+                        ]
+                    },
+                    {
+                        dia: "Sábado",
+                        tipoTreino: "Força",
+                        descricaoGeral: "💪 Full Body Estético - Volume Moderado + Pump",
+                        avisoSaude: "✅ Treino completo com exercícios SEGUROS para fechar a semana!",
+                        exercicios: [
+                            { nome: "Goblet Squat LENTO", gruposMusculares: "Pernas (tempo sob tensão)", seriesReps: "3x15", detalhesExecucao: "3s descida, 3s subida. Halter frontal. Queimação garantida!", errosComuns: ["Descer rápido"] },
+                            { nome: "Supino Inclinado com Halteres", gruposMusculares: "Peitoral superior", seriesReps: "3x15", detalhesExecucao: "Alto volume. Costas apoiadas. Definição do peitoral!", errosComuns: ["Tirar costas do banco"] },
+                            { nome: "Polia Alta Pegada Supinada", gruposMusculares: "Dorsais (espessura)", seriesReps: "3x15", detalhesExecucao: "Palmas para você. Puxar até peito. Costas grossas!", errosComuns: ["Inclinar demais para trás"] },
+                            { nome: "Elevação Lateral Composta", gruposMusculares: "Ombros (largura)", seriesReps: "3x12+8", detalhesExecucao: "12 normais + 8 parciais no topo. PUMP de ombro!", errosComuns: ["Peso demais nas parciais"] },
+                            { nome: "Ponte de Glúteos PESADA", gruposMusculares: "Glúteos (hipertrofia)", seriesReps: "3x20", detalhesExecucao: "Halter pesado no quadril. Pausa 3s espremendo! Glúteos de aço!", errosComuns: ["Não pausar", "Hiperextender"] },
+                            { nome: "Rosca Inversa com Barra Reta", gruposMusculares: "Antebraços, Braquial", seriesReps: "3x15", detalhesExecucao: "Pegada pronada (palmas para baixo), largura dos ombros. Antebraços grandes! Pulsos FIRMES e alinhados.", errosComuns: ["Soltar pulso", "Dobrar pulso"] },
+                            { nome: "Prancha RKC", gruposMusculares: "Core (intensidade máxima)", seriesReps: "3x20-30s", detalhesExecucao: "Contrair TUDO - glúteos, core, pernas. Intenso mas curto!", errosComuns: ["Não contrair máximo"] }
+                        ],
+                        circuitoMetabolic: {
+                            nome: "🔥 Finalizador Opcional - Condicionamento",
+                            protocolo: "3 rounds - 30s trabalho / 30s descanso",
+                            exercicios: ["Bike Intenso", "Prancha", "Mountain Climbers Moderado"]
+                        }
+                    },
+                    {
+                        dia: "Domingo",
+                        tipoTreino: "Descanso",
+                        descricaoGeral: "Recuperação - Mobilidade e alongamento leve. Importante para sua coluna!",
+                        exercicios: []
+                    }
+                ]
+            }
+        };
+        
+        let currentProfile = 'anna';
+        let currentDay = 'Segunda';
+        let treinosState = {};
+        
+        // Inicializar estado
+        function initState() {
+            const saved = localStorage.getItem('dashboard-treinos-v' + DATA_VERSION);
+            if (saved) {
+                treinosState = JSON.parse(saved);
+            } else {
+                // Limpar versões antigas
+                for (let i = 1; i < DATA_VERSION; i++) {
+                    localStorage.removeItem('dashboard-treinos-v' + i);
+                }
+                // Inicializar estado vazio
+                treinosState = {
+                    anna: {},
+                    legacia: {}
+                };
+                ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'].forEach(dia => {
+                    treinosState.anna[dia] = { concluido: false, exercicios: {}, cargas: {} };
+                    treinosState.legacia[dia] = { concluido: false, exercicios: {}, cargas: {} };
+                });
+            }
+            
+            // Garantir que estados antigos tenham o campo cargas
+            ['anna', 'legacia'].forEach(profile => {
+                ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'].forEach(dia => {
+                    if (!treinosState[profile][dia].cargas) {
+                        treinosState[profile][dia].cargas = {};
+                    }
+                });
+            });
+        }
+        
+        function saveState() {
+            localStorage.setItem('dashboard-treinos-v' + DATA_VERSION, JSON.stringify(treinosState));
+        }
+        
+        function switchProfile(profile) {
+            currentProfile = profile;
+            document.querySelectorAll('.tab').forEach((tab, i) => {
+                tab.classList.toggle('active', (i === 0 && profile === 'anna') || (i === 1 && profile === 'legacia'));
+            });
+            renderAll();
+        }
+        
+        function selectDay(dia) {
+            currentDay = dia;
+            renderDaySelector();
+            renderWorkout();
+        }
+        
+        function renderProfileInfo() {
+            const perfil = perfis[currentProfile];
+            document.getElementById('profile-info').innerHTML = `
+                <div class="profile-stat">
+                    <span class="label">Altura</span>
+                    <span class="value">${perfil.altura}</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="label">Peso</span>
+                    <span class="value">${perfil.peso}</span>
+                </div>
+            `;
+            
+            const warning = document.getElementById('health-warning');
+            if (perfil.observacoes) {
+                warning.style.display = 'block';
+                warning.textContent = perfil.observacoes;
+            } else {
+                warning.style.display = 'none';
+            }
+        }
+        
+        function renderStats() {
+            const perfil = perfis[currentProfile];
+            const state = treinosState[currentProfile];
+            
+            let treinosConcluidos = 0;
+            let exerciciosFeitos = 0;
+            let exerciciosTotal = 0;
+            
+            perfil.treinos.forEach(treino => {
+                if (state[treino.dia]?.concluido) treinosConcluidos++;
+                if (treino.exercicios) {
+                    exerciciosTotal += treino.exercicios.length;
+                    treino.exercicios.forEach((ex, i) => {
+                        if (state[treino.dia]?.exercicios?.[i]) exerciciosFeitos++;
+                    });
+                }
+            });
+            
+            const progressoTreinos = (treinosConcluidos / 7) * 100;
+            const progressoExercicios = exerciciosTotal > 0 ? (exerciciosFeitos / exerciciosTotal) * 100 : 0;
+            
+            document.getElementById('treinos-count').textContent = `${treinosConcluidos}/7`;
+            document.getElementById('exercicios-count').textContent = `${exerciciosFeitos}/${exerciciosTotal}`;
+            document.getElementById('treinos-progress').style.width = `${progressoTreinos}%`;
+            document.getElementById('exercicios-progress').style.width = `${progressoExercicios}%`;
+            
+            let statusEmoji = '🚀';
+            let statusText = 'Vamos lá!';
+            if (progressoTreinos >= 100) {
+                statusEmoji = '🏆';
+                statusText = 'Semana Completa!';
+            } else if (progressoTreinos >= 50) {
+                statusEmoji = '💪';
+                statusText = 'No Ritmo!';
+            }
+            
+            document.getElementById('status-text').textContent = statusEmoji;
+            document.getElementById('status-label').textContent = statusText;
+        }
+        
+        function renderDaySelector() {
+            const perfil = perfis[currentProfile];
+            const state = treinosState[currentProfile];
+            
+            document.getElementById('day-selector').innerHTML = perfil.treinos.map(treino => {
+                const isActive = treino.dia === currentDay;
+                const isCompleted = state[treino.dia]?.concluido;
+                return `
+                    <div class="day-btn ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}" 
+                         onclick="selectDay('${treino.dia}')">
+                        <div class="day-name">${treino.dia}</div>
+                        <div class="day-type">${treino.tipoTreino}</div>
+                        ${isCompleted ? '<div class="check">✓</div>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function toggleExercise(index) {
+            const state = treinosState[currentProfile][currentDay];
+            if (!state.exercicios) state.exercicios = {};
+            state.exercicios[index] = !state.exercicios[index];
+            
+            // Verificar se todos exercícios estão completos
+            const treino = perfis[currentProfile].treinos.find(t => t.dia === currentDay);
+            if (treino.exercicios && treino.exercicios.length > 0) {
+                const todosConcluidos = treino.exercicios.every((_, i) => state.exercicios[i]);
+                state.concluido = todosConcluidos;
+            }
+            
+            saveState();
+            renderAll();
+        }
+        
+        function toggleDayComplete() {
+            const state = treinosState[currentProfile][currentDay];
+            state.concluido = !state.concluido;
+            
+            // Se marcar como completo, marcar todos exercícios também
+            const treino = perfis[currentProfile].treinos.find(t => t.dia === currentDay);
+            if (treino.exercicios) {
+                if (!state.exercicios) state.exercicios = {};
+                treino.exercicios.forEach((_, i) => {
+                    state.exercicios[i] = state.concluido;
+                });
+            }
+            
+            saveState();
+            renderAll();
+        }
+        
+        function toggleExerciseDetails(index) {
+            const item = document.getElementById('exercise-' + index);
+            item.classList.toggle('expanded');
+        }
+        
+        function renderWorkout() {
+            const treino = perfis[currentProfile].treinos.find(t => t.dia === currentDay);
+            const state = treinosState[currentProfile][currentDay];
+            
+            if (treino.tipoTreino === 'Descanso') {
+                document.getElementById('workout-content').innerHTML = `
+                    <div class="workout-card">
+                        <div class="rest-day">
+                            <div class="rest-emoji">😴</div>
+                            <div class="rest-title">Dia de Descanso</div>
+                            <div class="rest-text">${treino.descricaoGeral}</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `
+                <div class="workout-card">
+                    <div class="workout-header">
+                        <div class="workout-title">${treino.dia} - ${treino.tipoTreino}</div>
+                        <div class="workout-badge">${treino.tipoTreino}</div>
+                    </div>
+                    <div class="workout-desc">${treino.descricaoGeral}</div>
+            `;
+            
+            if (treino.avisoSaude) {
+                html += `<div class="health-warning" style="margin: 0.5rem;">⚠️ ${treino.avisoSaude}</div>`;
+            }
+            
+            if (treino.protocolo) {
+                html += `
+                    <div class="protocol-card">
+                        <div class="protocol-title">📋 ${treino.protocolo.tipo}</div>
+                        <div class="protocol-text">
+                            <strong>Duração:</strong> ${treino.protocolo.duracao}<br>
+                            <strong>Protocolo:</strong> ${treino.protocolo.instrucoes}
+                            ${treino.protocolo.sugestao ? `<br><strong>Sugestão:</strong> ${treino.protocolo.sugestao}` : ''}
+                            ${treino.protocolo.exercicios ? `<br><strong>Exercícios:</strong> ${treino.protocolo.exercicios.join(', ')}` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                // Adicionar timer HIIT se for treino HIIT
+                if (treino.tipoTreino === 'HIIT') {
+                    html += `
+                        <div class="hiit-timer-container">
+                            <div class="timer-header">
+                                <h3>⏱️ Timer HIIT</h3>
+                                <div id="timer-phase" class="timer-phase">Pronto para Começar</div>
+                            </div>
+                            <div class="timer-display">
+                                <div id="timer-countdown" class="timer-countdown">00:00</div>
+                                <div id="timer-rounds" class="timer-rounds">Rodada: 0/0</div>
+                            </div>
+                            <div class="timer-progress-bar">
+                                <div id="timer-progress" class="timer-progress-fill" style="width: 0%"></div>
+                            </div>
+                            <div class="timer-controls">
+                                <button id="timer-start" class="timer-btn start" onclick="startTimer()">▶️ Iniciar</button>
+                                <button id="timer-pause" class="timer-btn pause" onclick="pauseTimer()" style="display: none;">⏸️ Pausar</button>
+                                <button id="timer-reset" class="timer-btn reset" onclick="resetTimer()">🔄 Reiniciar</button>
+                            </div>
+                            <div class="timer-info">
+                                O timer irá alternar automaticamente entre trabalho e descanso com sinal sonoro
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            if (treino.exercicios && treino.exercicios.length > 0) {
+                html += '<div class="exercise-list">';
+                treino.exercicios.forEach((ex, i) => {
+                    const isCompleted = state.exercicios?.[i];
+                    const loadHistory = getLoadHistory(i);
+                    const progressIndicator = getProgressionIndicator(loadHistory);
+                    
+                    html += `
+                        <div id="exercise-${i}" class="exercise-item ${isCompleted ? 'completed' : ''}">
+                            <div class="exercise-header">
+                                <div class="exercise-checkbox ${isCompleted ? 'checked' : ''}" 
+                                     onclick="event.stopPropagation(); toggleExercise(${i})"></div>
+                                <div class="exercise-name">${ex.nome}</div>
+                                <div class="exercise-reps">${ex.seriesReps}</div>
+                                <div class="exercise-toggle" onclick="toggleExerciseDetails(${i})">▼</div>
+                            </div>
+                            <div class="exercise-details">
+                                <div class="detail-section">
+                                    <div class="detail-title">Músculos</div>
+                                    <div class="detail-text">${ex.gruposMusculares}</div>
+                                </div>
+                                <div class="detail-section">
+                                    <div class="detail-title">Como Executar</div>
+                                    <div class="detail-text">${ex.detalhesExecucao}</div>
+                                </div>
+                                <div class="detail-section">
+                                    <div class="detail-title">Erros Comuns</div>
+                                    <ul class="error-list">
+                                        ${ex.errosComuns.map(err => `<li>${err}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                <div class="load-tracking">
+                                    <div class="load-tracking-header">
+                                        <div class="load-tracking-title">💪 Registro de Carga</div>
+                                        ${progressIndicator}
+                                    </div>
+                                    <div class="load-input-group">
+                                        <input 
+                                            type="text" 
+                                            id="load-input-${i}" 
+                                            class="load-input" 
+                                            placeholder="Ex: 20kg, 15kg, 12.5kg"
+                                            value="${loadHistory.length > 0 ? loadHistory[0].peso : ''}"
+                                        />
+                                        <button class="save-load-btn" onclick="saveLoad(${i})">
+                                            💾 Salvar
+                                        </button>
+                                    </div>
+                                    ${loadHistory.length > 0 ? `
+                                        <div class="load-history">
+                                            <div class="load-history-title">📊 Histórico (últimas 5 sessões)</div>
+                                            ${loadHistory.map((entry, idx) => `
+                                                <div class="load-entry">
+                                                    <span class="load-value">${entry.peso}</span>
+                                                    <span class="load-date">${formatDate(entry.data)}</span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+            
+            if (treino.circuitoMetabolic) {
+                html += `
+                    <div class="protocol-card" style="background: #450a0a; border-color: #ef4444;">
+                        <div class="protocol-title" style="color: #fca5a5;">🔥 ${treino.circuitoMetabolic.nome}</div>
+                        <div class="protocol-text" style="color: #fecaca;">
+                            <strong>Protocolo:</strong> ${treino.circuitoMetabolic.protocolo}<br>
+                            <strong>Exercícios:</strong> ${treino.circuitoMetabolic.exercicios.join(', ')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += `
+                    <button class="complete-day-btn ${state.concluido ? 'completed' : ''}" onclick="toggleDayComplete()">
+                        ${state.concluido ? '✓ Treino Concluído!' : 'Marcar Dia como Completo'}
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('workout-content').innerHTML = html;
+        }
+        
+        function renderAll() {
+            renderProfileInfo();
+            renderStats();
+            renderDaySelector();
+            renderWorkout();
+            initTimer(); // Inicializar timer se for HIIT
+        }
+        
+        // ===== LOAD TRACKING =====
+        function saveLoad(exerciseIndex) {
+            const input = document.getElementById(`load-input-${exerciseIndex}`);
+            const peso = input.value.trim();
+            
+            if (!peso) {
+                alert('Por favor, digite o peso utilizado (ex: 20kg, 15kg)');
+                return;
+            }
+            
+            const state = treinosState[currentProfile][currentDay];
+            if (!state.cargas) state.cargas = {};
+            if (!state.cargas[exerciseIndex]) state.cargas[exerciseIndex] = [];
+            
+            // Adicionar nova entrada de carga
+            const entry = {
+                peso: peso,
+                data: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+                timestamp: Date.now()
+            };
+            
+            state.cargas[exerciseIndex].unshift(entry); // Adicionar no início
+            
+            // Manter apenas últimas 10 entradas
+            if (state.cargas[exerciseIndex].length > 10) {
+                state.cargas[exerciseIndex] = state.cargas[exerciseIndex].slice(0, 10);
+            }
+            
+            saveState();
+            renderWorkout();
+        }
+        
+        function getLoadHistory(exerciseIndex) {
+            const state = treinosState[currentProfile][currentDay];
+            if (!state.cargas || !state.cargas[exerciseIndex]) return [];
+            return state.cargas[exerciseIndex].slice(0, 5); // Últimas 5 entradas
+        }
+        
+        function getProgressionIndicator(history) {
+            if (history.length < 2) return '';
+            
+            // Comparar os dois últimos registros
+            const current = parseFloat(history[0].peso.replace(/[^0-9.]/g, ''));
+            const previous = parseFloat(history[1].peso.replace(/[^0-9.]/g, ''));
+            
+            if (isNaN(current) || isNaN(previous)) return '';
+            
+            if (current > previous) {
+                return '<div class="load-indicator up" title="Progrediu!">↗</div>';
+            } else if (current < previous) {
+                return '<div class="load-indicator down" title="Diminuiu">↘</div>';
+            } else {
+                return '<div class="load-indicator same" title="Manteve">→</div>';
+            }
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString + 'T00:00:00');
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            const dateOnly = date.toISOString().split('T')[0];
+            const todayOnly = today.toISOString().split('T')[0];
+            const yesterdayOnly = yesterday.toISOString().split('T')[0];
+            
+            if (dateOnly === todayOnly) return 'Hoje';
+            if (dateOnly === yesterdayOnly) return 'Ontem';
+            
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            return `${day}/${month}`;
+        }
+        // ===== END LOAD TRACKING =====
+        
+        // ===== HIIT TIMER =====
+        let timerInterval = null;
+        let timerState = {
+            isRunning: false,
+            currentPhase: 'work', // 'work' ou 'rest'
+            currentRound: 0,
+            totalRounds: 0,
+            workTime: 30,
+            restTime: 30,
+            timeRemaining: 30,
+            totalTime: 0,
+            elapsedTime: 0
+        };
+        
+        function initTimer() {
+            const treino = perfis[currentProfile].treinos.find(t => t.dia === currentDay);
+            if (!treino || treino.tipoTreino !== 'HIIT') return;
+            
+            // Extrair informações do protocolo
+            // Exemplos: "30s sprint / 30s caminhada - 20 rounds"
+            // "45s trabalho / 15s descanso - 3 rounds"
+            const instrucoes = treino.protocolo?.instrucoes || '';
+            
+            // Tentar extrair tempos e rodadas
+            const workMatch = instrucoes.match(/(\d+)s?\s*(sprint|trabalho)/i);
+            const restMatch = instrucoes.match(/(\d+)s?\s*(caminhada|descanso)/i);
+            const roundsMatch = instrucoes.match(/(\d+)\s*rounds?/i);
+            
+            if (workMatch) timerState.workTime = parseInt(workMatch[1]);
+            if (restMatch) timerState.restTime = parseInt(restMatch[1]);
+            if (roundsMatch) timerState.totalRounds = parseInt(roundsMatch[1]);
+            
+            // Se tiver exercícios listados, usar como rodadas
+            if (treino.protocolo?.exercicios && treino.protocolo.exercicios.length > 0) {
+                if (timerState.totalRounds === 0) {
+                    timerState.totalRounds = treino.protocolo.exercicios.length;
+                }
+            }
+            
+            // Fallback para valores padrão
+            if (timerState.totalRounds === 0) timerState.totalRounds = 10;
+            
+            timerState.timeRemaining = timerState.workTime;
+            timerState.currentRound = 1;
+            timerState.currentPhase = 'work';
+            timerState.totalTime = (timerState.workTime + timerState.restTime) * timerState.totalRounds;
+            timerState.elapsedTime = 0;
+            
+            updateTimerDisplay();
+        }
+        
+        function startTimer() {
+            if (timerState.isRunning) return;
+            
+            timerState.isRunning = true;
+            document.getElementById('timer-start').style.display = 'none';
+            document.getElementById('timer-pause').style.display = 'inline-block';
+            
+            timerInterval = setInterval(timerTick, 1000);
+        }
+        
+        function pauseTimer() {
+            timerState.isRunning = false;
+            document.getElementById('timer-start').style.display = 'inline-block';
+            document.getElementById('timer-pause').style.display = 'none';
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+        
+        function resetTimer() {
+            pauseTimer();
+            initTimer();
+        }
+        
+        function timerTick() {
+            timerState.timeRemaining--;
+            timerState.elapsedTime++;
+            
+            if (timerState.timeRemaining <= 0) {
+                // Trocar de fase
+                playBeep();
+                
+                if (timerState.currentPhase === 'work') {
+                    // Passou de trabalho para descanso
+                    timerState.currentPhase = 'rest';
+                    timerState.timeRemaining = timerState.restTime;
+                } else {
+                    // Passou de descanso para trabalho (nova rodada)
+                    timerState.currentRound++;
+                    
+                    if (timerState.currentRound > timerState.totalRounds) {
+                        // Timer concluído!
+                        playBeepComplete();
+                        pauseTimer();
+                        alert('🎉 HIIT Concluído! Parabéns! 💪');
+                        return;
+                    }
+                    
+                    timerState.currentPhase = 'work';
+                    timerState.timeRemaining = timerState.workTime;
+                }
+            }
+            
+            updateTimerDisplay();
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerState.timeRemaining / 60);
+            const seconds = timerState.timeRemaining % 60;
+            const timeStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            document.getElementById('timer-countdown').textContent = timeStr;
+            document.getElementById('timer-rounds').textContent = `Rodada: ${timerState.currentRound}/${timerState.totalRounds}`;
+            
+            // Atualizar fase
+            const phaseEl = document.getElementById('timer-phase');
+            if (timerState.currentPhase === 'work') {
+                phaseEl.textContent = '🔥 TRABALHO!';
+                phaseEl.className = 'timer-phase work';
+            } else {
+                phaseEl.textContent = '😮‍💨 Descanso';
+                phaseEl.className = 'timer-phase rest';
+            }
+            
+            // Atualizar barra de progresso
+            const progress = (timerState.elapsedTime / timerState.totalTime) * 100;
+            document.getElementById('timer-progress').style.width = `${Math.min(progress, 100)}%`;
+        }
+        
+        function playBeep() {
+            // Criar beep usando Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+        
+        function playBeepComplete() {
+            // Beep triplo para conclusão
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            [0, 0.15, 0.3].forEach(delay => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 1000;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + delay);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + delay + 0.2);
+                
+                oscillator.start(audioContext.currentTime + delay);
+                oscillator.stop(audioContext.currentTime + delay + 0.2);
+            });
+        }
+        // ===== FIM HIIT TIMER =====
+        
+        // Inicializar
+        initState();
+        renderAll();
+    </script>
+</body>
+</html>
